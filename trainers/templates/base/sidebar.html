@@ -3,7 +3,7 @@
 
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg text-right align-items-right navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'images/logo/logo.png' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
@@ -21,13 +21,13 @@
                     <a class="nav-link dropdown-toggle" href="#" id="traineesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         المتدربون
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="traineesDropdown">
-                        <li><a class="dropdown-item" href="{% url 'trainees' 'big' %}">الكبار</a></li>
-                        <li><a class="dropdown-item" href="{% url 'trainees' 'med' %}">الفتيان</a></li>
-                        <li><a class="dropdown-item" href="{% url 'trainees' 'small' %}">الصغار</a></li>
-                        <li><a class="dropdown-item" href="{% url 'trainees' 'women' %}">المتدربات النساء</a></li>
-                        <li><a class="dropdown-item" href="{% url 'trainees' 'all' %}">الكل</a></li>
-                        <li><a class="dropdown-item" href="{% url 'add_trainee' %}">اضافة متدرب جديد</a></li>
+                    <ul class="dropdown-menu text-right" aria-labelledby="traineesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'trainees' 'big' %}">الكبار</a></li><hr>
+                        <li><a class="dropdown-item" href="{% url 'trainees' 'med' %}">الفتيان</a></li><hr>
+                        <li><a class="dropdown-item" href="{% url 'trainees' 'small' %}">الصغار</a></li><hr>
+                        <li><a class="dropdown-item" href="{% url 'trainees' 'women' %}">المتدربات النساء</a></li><hr>
+                        <li><a class="dropdown-item" href="{% url 'trainees' 'all' %}">الكل</a></li><hr>
+                        <li><a class="dropdown-item" href="{% url 'add_trainee' %}">اضافة متدرب جديد</a></li><hr>
                         <li><a class="dropdown-item" href="{% url 'add_women' %}">اضافة امرأة</a></li>
 
                     </ul>
@@ -36,7 +36,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="activitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         الأنشطة
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="activitiesDropdown">
+                    <ul class="dropdown-menu text-right" aria-labelledby="activitiesDropdown">
                         <li><a class="dropdown-item" href="{% url 'articles' 'test' %}">الامتحانات</a></li>
                         <li><a class="dropdown-item" href="{% url 'articles' 'dawri' %}">الدوريات</a></li>
                         <li><a class="dropdown-item" href="{% url 'articles' 'training' %}">التداريب</a></li>
@@ -46,10 +46,10 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="traineesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle " href="#" id="traineesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         دفعات
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="traineesDropdown">
+                    <ul class="dropdown-menu text-right" aria-labelledby="traineesDropdown">
                         <li><a class=" bg-success dropdown-item active" aria-current="page" href="{% url 'add_payment' %}">اضافة دفعة جديدة</a></li>
                         <li><a class="dropdown-item" href="{% url 'payments_history' %}">أرشيف الدفعات</a></li>
                     </ul>
@@ -60,9 +60,11 @@
                     <a class="nav-link dropdown-toggle"  id="financialDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         المالية
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="financialDropdown">
+                    <ul class="dropdown-menu text-right" aria-labelledby="financialDropdown">
                         <li><a class="dropdown-item" href="{% url 'finantial_status' %}">التقرير المالي</a></li>
+                        <hr>
                         <li><a class="dropdown-item" href="{% url 'add_expenses' %}">اضافة مصاريف</a></li>
+                        <hr>
                         <li><a class="dropdown-item" href="{% url 'add_payments' %}">اضافة مداخيل</a></li>
                     </ul>
                 </li>
@@ -78,7 +80,7 @@
                         <!--img src="https://github.com/mdo.png" alt="User" width="30" height="30" class="rounded-circle">-->
                         <span class="ms-1">الجمعية</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end text-right">
                         <li><a class="dropdown-item" href="{% url 'add_staff' %}">موظف جديد</a></li>
                         <li><a class="dropdown-item" href="{% url 'staff_list' %}">معلومات الجمعية</a></li>
                         <li><hr class="dropdown-divider"></li>

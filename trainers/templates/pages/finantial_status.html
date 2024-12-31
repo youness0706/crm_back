@@ -116,6 +116,30 @@
         <p id="report-period">نظرة شاملة على الأداء المالي للنادي من {{start}} إلى {{end}}</p>
         <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#periodModal">تحديد الفترة الزمنية</button>
     </div>
+    <!-- Modal for Selecting Date Period -->
+<div class="modal fade" id="periodModal" tabindex="-1" aria-labelledby="periodModalLabel" aria-hidden="true">
+    <form class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="periodModalLabel">حدد الفترة الزمنية</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="start-date" class="form-label">تاريخ البداية</label>
+                    <input type="text" name="start" id="start-date" class="form-control datepicker" placeholder="اختر التاريخ">
+                </div>
+                <div class="mb-3">
+                    <label for="end-date" class="form-label">تاريخ النهاية</label>
+                    <input type="text" id="end-date" name="end" class="form-control datepicker" placeholder="اختر التاريخ">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="applyDateRange">تأكيد</button>
+            </div>
+        </div>
+    </form>
+</div>
 
     <!-- Financial Summary -->
     <section class="mb-4">
@@ -272,7 +296,29 @@
         </div>
     </section>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initialize Flatpickr for Date Pickers
+        flatpickr(".datepicker", {
+            dateFormat: "Y-m-d",
+            locale: "ar", // Adjust for Arabic
+            allowInput: true,
+        });
     
+        // Apply Date Range Selection and Update Report Text
+        document.getElementById("applyDateRange").addEventListener("click", function() {
+            const startDate = document.getElementById("start-date").value;
+            const endDate = document.getElementById("end-date").value;
+    
+            if (startDate && endDate) {
+                document.getElementById("report-period").textContent = `نظرة شاملة على الأداء المالي للنادي من ${startDate} إلى ${endDate}`;
+            }
+    
+            // Close the modal
+            bootstrap.Modal.getInstance(document.getElementById('periodModal')).hide();
+        });
+    </script>
 
     <script>
         // Your existing chart initialization code with one small change

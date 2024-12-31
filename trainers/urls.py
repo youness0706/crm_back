@@ -21,6 +21,7 @@ urlpatterns = [
     path('articles/<str:category>', views.articles, name='articles'),
     path('article/<int:id>', views.article_details, name='article_detail'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('edit_article/<int:id>', views.edit_article, name='edit_article'),
     #Financial
     path('finantial_status/',views.finantial_status,name='finantial_status'),
     path('add_expenses/',views.add_expenses,name='add_expenses'),

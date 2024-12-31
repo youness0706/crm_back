@@ -112,12 +112,9 @@
                 <div class="col-md-6 mb-3">
                     <label for="belt" class="form-label">الحزام الحالي</label>
                     <select class="form-select" id="belt" name="belt" required>
-                        <option value="أبيض" {% if trainee.belt == "أبيض" %}selected{% endif %}>أبيض</option>
-                        <option value="أصفر" {% if trainee.belt == "أصفر" %}selected{% endif %}>أصفر</option>
-                        <option value="أخضر" {% if trainee.belt == "أخضر" %}selected{% endif %}>أخضر</option>
-                        <option value="أزرق" {% if trainee.belt == "أزرق" %}selected{% endif %}>أزرق</option>
-                        <option value="أحمر" {% if trainee.belt == "أحمر" %}selected{% endif %}>أحمر</option>
-                        <option value="أسود" {% if trainee.belt == "أسود" %}selected{% endif %}>أسود</option>
+                        {% for value,display in trainee.get_belt_choices %}
+                            <option value="{{ value }}" {% if trainee.belt_degree == value %}selected{% endif %}>{{ display }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">

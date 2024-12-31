@@ -49,6 +49,10 @@ def Home(request):
                 'label': 'التأمين', 
                 'frequency': 'yearly', 
                 'grace_days': 0
+            },'jawaz': {
+                'label': 'جواز', 
+                'frequency': 'yearly', 
+                'grace_days': 0
             }
         }
 
@@ -71,14 +75,20 @@ def Home(request):
                     
                     if category_info['frequency'] == 'monthly':
                         # Get the last day of the month for the last payment
+                        if today.month == 12:
+                            next_month = 1
+                            year = today.year + 1
+                        else:
+                            next_month = today.month + 1
+                            year = today.year
                         last_day_of_payment_month = calendar.monthrange(
-                            last_payment.paymentdate.year, 
-                            last_payment.paymentdate.month
+                            year,
+                            next_month
                         )[1]  # E.g., 28, 29, 30, or 31
                         payment_due_date = last_payment.paymentdate.replace(
                             day=min(last_payment.paymentdate.day,last_day_of_payment_month),
-                            month=today.month,
-                            year=today.year
+                            month=next_month,
+                            year=year
                         )
                         print(payment_due_date)
                     
@@ -235,7 +245,7 @@ def Home(request):
 
 @login_required(login_url='/login/')
 def add_trainee(request):
-        first_name=None; last_name=None; birthday=None; gender=None; phone=None; email=None; category=None; cin=None
+        first_name=None; last_name=None; birthday=None; gender=None; phone=None; email=None; category=None; cin=None;upload=None
         if request.method == 'POST':
             first_name = request.POST.get('first_name')
             last_name = request.POST.get('last_name')
@@ -275,7 +285,9 @@ def add_women(request):
             cin = request.POST.get('cin')
             education = request.POST.get('education')
             belt = request.POST.get('belt')
-            upload = request.FILES['upload']
+            if 'upload' in request.FILES:upload = request.FILES['upload']
+
+            
             category = request.POST.get('category')
             height = request.POST.get('height')
             weight = request.POST.get('weight')
@@ -525,7 +537,7 @@ def finantial_status(request):
     staff_total = 0
 
     # Calculate recurring rent payments
-    organization_info = OrganizationInfo.objects.first()  # Assuming one organization info record
+    organization_info = OrganizationInfo.objects.first() # Assuming one organization info record
     if organization_info:
         rent_day = organization_info.datepay.day
         current_date = organization_info.datepay
@@ -794,22 +806,36 @@ def delete_staff(request, staff_id):
 
 @login_required(login_url='/login/')
 def edit_organization(request):
-    organization = OrganizationInfo.objects.first()
+    if not request.user.is_superuser:
+        organization = OrganizationInfo.objects.exists()
+        if organization:
+            organization = OrganizationInfo.objects.first()
+        if request.method == 'POST':
+            if organization:
+                organization.name = request.POST.get('name')
+                organization.description = request.POST.get('description')
+                organization.established_date = request.POST.get('established_date')
+                organization.rent_amount = float(request.POST.get('rent_amount'))
+                organization.phone_number = request.POST.get('phone_number')
+                organization.email = request.POST.get('email')
+                organization.datepay = request.POST.get('payrentdate')
+                organization.save()
 
-    if request.method == 'POST':
-        organization.name = request.POST.get('name')
-        organization.description = request.POST.get('description')
-        organization.established_date = request.POST.get('established_date')
-        organization.rent_amount = float(request.POST.get('rent_amount'))
-        organization.phone_number = request.POST.get('phone_number')
-        organization.email = request.POST.get('email')
-        organization.datepay = request.POST.get('payrentdate')
-        organization.save()
+            else:OrganizationInfo.objects.create(name = request.POST.get('name')
+                ,description = request.POST.get('description')
+                ,established_date = request.POST.get('established_date')
+                ,rent_amount = float(request.POST.get('rent_amount'))
+                ,phone_number = request.POST.get('phone_number')
+                ,email = request.POST.get('email')
+                ,datepay = request.POST.get('payrentdate')
+                ).save()
+            
 
-        #.success(request, "تم تحديث بيانات الجمعية بنجاح")
-        return redirect('staff_list')
+        
+            #.success(request, "تم تحديث بيانات الجمعية بنجاح")
+            return redirect('staff_list')
 
-    return render(request, 'pages/edit_organization.html', {'organization': organization})
+        return render(request, 'pages/edit_organization.html', {'organization': organization})
 
 
 
@@ -1069,3 +1095,45 @@ from trainers.tasks import send_payment_reminder_task
 send_payment_reminder_task(repeat=60*60*24)
 
 #handling errors
+
+
+
+from django.http import JsonResponse
+
+@login_required
+def edit_article(request, id):
+    article = get_object_or_404(Article, id=id)
+    trainees = Trainer.objects.all()
+
+    if request.method == 'POST':
+        
+            # Update basic article information
+            article.title = request.POST.get('title')
+            article.date = request.POST.get('date')
+            article.location = request.POST.get('location')
+            article.participetion_price = float(request.POST.get('profitpayed', 0))
+            article.costs = float(request.POST.get('costs', 0))
+            article.content = request.POST.get('content')
+            
+                        
+            # Update trainees
+            selected_trainees = request.POST.getlist('trainees')
+            article.trainees.clear()
+            article.trainees.add(*selected_trainees)
+            
+            # Save the article
+            article.save()
+            
+            messages.success(request, 'تم تحديث المقالة بنجاح')
+            return redirect('article_detail', id=article.id)
+            
+       
+    
+    context = {
+        'article': article,
+        'trainees_art': article.trainees.all(),
+        'trainees': trainees,
+    }
+    
+    return render(request, 'pages/edit_article.html', context)
+

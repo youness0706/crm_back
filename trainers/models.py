@@ -51,6 +51,9 @@ class Trainer(models.Model):
             age -= 1
         return age
     return None
+  @staticmethod
+  def get_belt_choices():
+        return Trainer.belts
   def __str__(self):
      return self.first_name + ' ' +self.last_name
   @property
@@ -64,22 +67,25 @@ class Payments(models.Model):
     ("month", "شهرية"),
     ("subscription", "انخراط"),
     ("assurance", "التأمين"),
+    ("jawaz", "جواز"),
   )
   trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
   paymentdate= models.DateField(default=timezone.now)
   paymentCategry  = models.CharField(default=True,choices=CatChoices, max_length=20)
   paymentAmount  = models.IntegerField(default=True)
-
+  @staticmethod
+  def get_catchoices():
+        return Payments.CatChoices
 
 class Article(models.Model):
-    choices = (('local','local'),
-               ('reigion','reigion'),
-               ('national','national')
+    choices = (('local','محلي'),
+               ('reigion','جهوي'),
+               ('national','وطني'),
                ) 
-    cts = (('League','League'),
-           ('training','training'),
-           ('dawri','dawri'),
-           ('test','test'),
+    cts = (('League','بطولة'),
+           ('training','تدريب'),
+           ('dawri','دوري'),
+           ('test','امتحان'),
            )
     date    = models.DateField(default=timezone.now)
     title = models.CharField(max_length=200)
@@ -100,6 +106,12 @@ class Article(models.Model):
         if self.costs is not None and self.participetion_price is not None:
             return self.participetion_price*self.trainees.count()-self.costs
         return None
+    @staticmethod
+    def get_area_choices():
+        return Article.choices
+    @staticmethod
+    def get_categories():
+        return Article.cts
     
 
 class Costs(models.Model):
