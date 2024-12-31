@@ -852,7 +852,7 @@ def login_view(request):
             # Authenticate the user
             user = authenticate(request, username=username, password=password)
             
-            if user is not None:
+            if user :
                 # Check if the user is associated with a staff member
                 try:
                     staff = user.staff  # Assuming the related name is 'staff'
@@ -865,7 +865,7 @@ def login_view(request):
                     return render(request, 'pages/login.html')
             else:
                 messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
-                return render(request, 'login.html')
+                return render(request, 'pages/login.html')
         
         return render(request, 'pages/login.html')
     else:
