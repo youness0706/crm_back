@@ -426,7 +426,7 @@ def delete_trainer_view(request, id):
     cat = trainer.category
     trainer.delete()
     messages.success(request, "تم حذف المدرب بنجاح.")
-    return redirect("trainees/"+cat)  # استبدل "trainers_list" بمسار القائمة الرئيسية
+    return redirect("trainees")  # استبدل "trainers_list" بمسار القائمة الرئيسية
 
 
 @login_required(login_url='/login/')
