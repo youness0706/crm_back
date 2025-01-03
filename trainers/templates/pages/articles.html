@@ -9,7 +9,10 @@
         <h1 class="text-primary">قائمة المقالات</h1>
         <p class="text-muted">اكتشف أحدث المقالات وتصفح المحتوى الذي يهمك</p>
     </div>
-
+    
+    <div class="col-md-12 mt-3">
+        <span id="trainee-count" class="badge bg-primary">عدد الانشطة: {{number}}</span>
+    </div>
     <!-- زر إضافة مقال جديد -->
     <div class="d-flex justify-content-end mb-3">
         <a href="{% url 'add_article' %}" class="btn btn-success">

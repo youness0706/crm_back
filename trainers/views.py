@@ -378,7 +378,7 @@ def trainees(request,category):
                     
     
     template = loader.get_template('pages/olders.html')
-    return HttpResponse(template.render({'trainers':trainers},request))
+    return HttpResponse(template.render({'trainers':trainers,'number':trainers.count()},request))
 
 
 
@@ -507,7 +507,8 @@ def articles(request,category):
     else:
         articles = Article.objects.all()
     context = {
-        'articles':articles
+        'articles':articles,
+        'number':articles.count()
     }
     return render(request,'pages/articles.html',context)
 
@@ -797,6 +798,9 @@ def edit_staff(request, staff_id):
 @login_required(login_url='/login/')
 def delete_staff(request, staff_id):
     staff = get_object_or_404(Staff, id=staff_id)
+    if staff.user.is_superuser:
+            return redirect('home')
+        
     staff.user.delete()  # يحذف المستخدم المرتبط
     staff.delete()  # يحذف سجل الموظف
 
