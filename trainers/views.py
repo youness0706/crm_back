@@ -810,7 +810,7 @@ def delete_staff(request, staff_id):
 
 @login_required(login_url='/login/')
 def edit_organization(request):
-    if not request.user.is_superuser:
+    if request.user.is_superuser:
         organization = OrganizationInfo.objects.exists()
         if organization:
             organization = OrganizationInfo.objects.first()
@@ -840,6 +840,7 @@ def edit_organization(request):
             return redirect('staff_list')
 
         return render(request, 'pages/edit_organization.html', {'organization': organization})
+    return redirect('staff_list')
 
 
 
