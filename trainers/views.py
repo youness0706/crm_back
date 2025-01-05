@@ -1011,7 +1011,7 @@ def emails(request):
 
     return render(request,'pages/emails.html',con)
 
-
+"""
 from background_task import background
 
 @background
@@ -1105,7 +1105,7 @@ send_payment_reminder_task(repeat=60*60*24)
 
 
 from django.http import JsonResponse
-
+"""
 @login_required
 def edit_article(request, id):
     article = get_object_or_404(Article, id=id)
