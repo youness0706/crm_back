@@ -27,7 +27,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="title" class="form-label">العنوان</label>
+                        <label for="title" class="form-label">النوع</label>
                         <input class="form-control" id="title" name="title" required>
                     </div>
                     <div class="mb-3">
@@ -36,7 +36,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">الوصف</label>
-                        <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="2" ></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="amount" class="form-label">المبلغ</label>

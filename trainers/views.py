@@ -245,25 +245,25 @@ def Home(request):
 
 @login_required(login_url='/login/')
 def add_trainee(request):
-        first_name=None; last_name=None; birthday=None; gender=None; phone=None; email=None; category=None; cin=None;upload=None
+        first_name=None; last_name=None; birthday=None; gender=None; phone=None; email='NULL'; category=None; cin=None;upload=None
         if request.method == 'POST':
             first_name = request.POST.get('first_name')
             last_name = request.POST.get('last_name')
             birthday = request.POST.get('birthday')
             gender = request.POST.get('gender')
-            phone = request.POST.get('phone')
-            phone_parent = request.POST.get('phone_parent')
-            email = request.POST.get('email')
-            address = request.POST.get('address')
+            phone = request.POST.get('phone',0) 
+            phone_parent = request.POST.get('phone_parent',0) or 0
+            email = request.POST.get('email','None@emale.com')
+            address = request.POST.get('address','Argana')
             cin = request.POST.get('cin')
             education = request.POST.get('education')
             belt = request.POST.get('belt')
-            upload = request.FILES['upload']
+            if 'upload' in request.FILES:upload = request.FILES['upload']
             category = request.POST.get('category')
-            height = request.POST.get('height')
-            weight = request.POST.get('weight')
+            height = request.POST.get('height',0) or 0
+            weight = request.POST.get('weight',0) or 0
 
-            if first_name and last_name and birthday and gender and phone and email and category and cin:
+            if first_name and last_name and birthday and gender and education and category and cin:
                 Trainer(first_name=first_name,last_name=last_name,birth_day=birthday,phone=phone,email=email,
                         address=address,CIN=cin, male_female=gender,belt_degree=belt,Degree=education,category=category,
                         started_day=datetime.today(),image=upload,tall=height,weight=weight,phone_parent=phone_parent
@@ -525,9 +525,10 @@ from datetime import datetime, timedelta
 
 @login_required(login_url='/login/')
 def finantial_status(request):
+    dm = timezone.datetime
     # Retrieve start and end dates from GET parameters
-    start = request.GET.get('start', '2024-01-01')
-    end = request.GET.get('end', '2024-12-31')
+    start = request.GET.get('start', '2025-01-01')
+    end = request.GET.get('end', '2025-12-31')
     
     # Convert string dates to datetime objects and then to date objects
     start_date = datetime.strptime(start, "%Y-%m-%d").date()
@@ -545,7 +546,10 @@ def finantial_status(request):
 
         # Count the number of times the rent day occurs in the range
         rent_count = 0
-        while current_date <= end_date:
+        today = datetime.today().date()
+        # Format the date as YYYY MM DD.
+        today_date =datetime.strptime(str(today),"%Y-%m-%d").date()
+        while current_date <= end_date and current_date <= today_date:
             if current_date >= start_date:
                 rent_count += 1
             # Move to the next month
@@ -669,14 +673,12 @@ def add_expenses(request):
         
             title = request.POST.get("title")
             date = request.POST.get("date")
-            category = request.POST.get("category")
             description = request.POST.get("description")
             amount = float(request.POST.get("amount"))
 
             # Create a new expense entry
             Costs(
                 date=date,
-                is_allways=category,
                 desc=description,
                 amount=amount,
                 cost = title
@@ -841,7 +843,6 @@ def edit_organization(request):
 
         return render(request, 'pages/edit_organization.html', {'organization': organization})
     return redirect('staff_list')
-
 
 
 ## LOGIN
