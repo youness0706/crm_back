@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'trainers.apps.TrainersConfig',
     'ckeditor',
     'django.contrib.humanize',
-    'background_task',
 
 ]
 
