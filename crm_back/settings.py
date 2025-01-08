@@ -97,13 +97,6 @@ elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
     DATABASES = {
         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
     }
-    # Add SSL configuration explicitly
-    DATABASES['default']['OPTIONS'] = {
-        'ssl': {
-            'ca': '/path/to/your/ca_certificate.pem',  # Use an appropriate CA cert file
-        }
-    }
-
 
 
 # Password validation
