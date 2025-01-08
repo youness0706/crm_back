@@ -20,6 +20,13 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # Add near the top
+
+WHITENOISE_ROOT = MEDIA_ROOT
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -176,11 +183,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'youness.bouhnif.84@edu.uiz.ac.ma'
 EMAIL_HOST_PASSWORD = 'JM1205840000.'
-
-
-
-
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # Add near the top
-
-WHITENOISE_ROOT = MEDIA_ROOT
 
