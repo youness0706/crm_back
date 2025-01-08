@@ -96,16 +96,6 @@ WSGI_APPLICATION = 'crm_back.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'defaultdb',
-        'USER': 'avnadmin',
-        'PASSWORD': 'AVNS_PRzNcERWDYA_Y_b6fWa',
-        'HOST': 'mysql-17e18f1-nojoum.b.aivencloud.com',
-        'PORT': '13697',
-    }
-}
 
 
 
