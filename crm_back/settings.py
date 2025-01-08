@@ -80,10 +80,15 @@ WSGI_APPLICATION = 'crm_back.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'defaultdb',
+        'USER': 'avnadmin',
+        'PASSWORD': 'AVNS_PRzNcERWDYA_Y_b6fWa',
+        'HOST': 'mysql-17e18f1-nojoum.b.aivencloud.com',
+        'PORT': '13697',
     }
 }
+
 
 
 # Password validation
