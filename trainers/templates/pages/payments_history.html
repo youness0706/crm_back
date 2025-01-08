@@ -6,7 +6,8 @@
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">قائمة الدفعات</h2>
-
+    <a href="{% url 'export_data' 'payments' %}" class="btn btn-success"><i class="fa-solid fa-download"></i> تحميل</a>
+    <a href="{% url 'add_payment' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة دفعة</a>
     <!-- Payments Table -->
     <div class="table-responsive">
         <table class="table table-bordered text-center">

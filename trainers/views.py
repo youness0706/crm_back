@@ -1143,3 +1143,33 @@ def edit_article(request, id):
     
     return render(request, 'pages/edit_article.html', context)
 
+
+import pandas as pd
+
+
+@login_required(login_url='/login/')
+def export_data(request,category):
+    if category == 'payments':
+        data = Payments.objects.all().values()
+    elif category == 'trainers':
+        data = Trainer.objects.all().values()
+    elif category == 'articles':
+        data = Article.objects.all().values()
+    elif category == 'staff':
+        data = Staff.objects.all().values()
+    elif category == 'added_payments':
+        data = Addedpay.objects.all().values()
+    elif category == 'expenses':
+        data = Costs.objects.all().values()
+    else:
+        messages.error(request, 'الفئة غير معروفة')
+    # Query the Person model to get all records
+    if data:
+        # Convert the QuerySet to a DataFrame
+        df = pd.DataFrame(list(data))
+        # Define the Excel file response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename={category}.xlsx'
+        # Use Pandas to write the DataFrame to an Excel file
+        df.to_excel(response, index=False, engine='openpyxl')
+        return response

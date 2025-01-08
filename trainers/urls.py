@@ -40,7 +40,7 @@ urlpatterns = [
     path('emails/', views.emails, name='emails'),
     #success
     path('success/', views.success, name='success'),
-    #Errors
-
+    #DATA Download
+    path('export_data/<str:category>', views.export_data, name='export_data'),
 
 ]

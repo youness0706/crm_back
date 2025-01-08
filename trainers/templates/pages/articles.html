@@ -5,9 +5,10 @@
 {% block content %}
 <div class="container mt-5">
     <!-- رأس الصفحة -->
+
     <div class="text-center mb-4">
         <h1 class="text-primary">قائمة المقالات</h1>
-        <p class="text-muted">اكتشف أحدث المقالات وتصفح المحتوى الذي يهمك</p>
+        <p class="text-muted">اكتشف أحدث الانشطة وتصفح المحتوى الذي يهمك</p>
     </div>
     
     <div class="col-md-12 mt-3">
@@ -15,6 +16,7 @@
     </div>
     <!-- زر إضافة مقال جديد -->
     <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'export_data' 'articles' %}" class="btn ml-2 btn-success"><i class="fa-solid fa-download"></i> تحميل</a>
         <a href="{% url 'add_article' %}" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> إضافة مقال جديد
         </a>

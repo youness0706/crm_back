@@ -5,6 +5,11 @@
 {% block content %}
 <section class="section m-2">
     <div class="container">
+        
+        <div class="col-md-4 mt-3">
+            <span id="trainee-count" class="badge bg-primary">عدد المتدربين: {{number}}</span>
+        </div>
+        
         <div class="justify-content-center row">
             <div class="col-lg-12">
                 <div class="candidate-list-widgets mb-4">
@@ -15,6 +20,7 @@
 
                         </div>
                     </div>
+                    
                     <form class="col-lg-9">
                         
                         <div class="g-2 row">
@@ -43,14 +49,12 @@
                             <div class="col-lg-3">
                                 <div>
                                     <button class="btn btn-primary" type="submit"><i class="uil uil-filter"></i> تصنيف</button>
+                                
+                                    <a href="{% url 'export_data' 'trainers' %}" class="btn mr-2 btn-success"><i class="fa-solid fa-download"></i> تحميل</a>
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <div class="col-md-12 mt-3">
-                        <span id="trainee-count" class="badge bg-primary">عدد المتدربين: {{number}}</span>
-                    </div>
-                    </div>
                 </div>
             </div>
         </div>
