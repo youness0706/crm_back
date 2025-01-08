@@ -180,3 +180,7 @@ EMAIL_HOST_PASSWORD = 'JM1205840000.'
 
 
 
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # Add near the top
+
+WHITENOISE_ROOT = MEDIA_ROOT
+
