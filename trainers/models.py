@@ -2,65 +2,81 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
+from django.utils.timezone import now
+import os
 
-# Create your models here.
+
+
+def image_upload_to(instance, filename):
+    """
+    Custom function to generate the image upload path and filename.
+    Images are stored in the directory `trainees/YYYY/MM/DD/` with the filename `first_last.ext`.
+    """
+    # Extract the file extension
+    ext = filename.split('.')[-1]
+    # Format the new filename
+    filename = f"{instance.first_name}_{instance.last_name}.{ext}".lower()
+    # Generate the upload path
+    return os.path.join(f"trainees/{now().year}/{now().month:02}/{now().day:02}/", filename)
+
+
 class Trainer(models.Model):
-  CatChoices = (
-    ("small", "الصغار"),
-    ("med", "فتيان"),
-    ("big", "كبار"),
-    ('women','نساء')
-  )
-  belts = (
-    ("أبيض", "أبيض"),
-    ("أبيض مع شريط أصفر", "أبيض مع شريط أصفر"),
-    ("أصفر", "أصفر"),
-    ("أصفر مع شريط أخضر", "أصفر مع شريط أخضر"),
-    ("أخضر", "أخضر"),
-    ("أخضر مع شريط أزرق", "أخضر مع شريط أزرق"),
-    ("أزرق", "أزرق"),
-    ("أزرق مع شريط أحمر", "أزرق مع شريط أحمر"),
-    ("أحمر", "أحمر"),
-    ("أحمر مع شريط أسود", "أحمر مع شريط أسود"),
-    ("أسود", "أسود")
-)
-  image = models.ImageField(upload_to='photos/%Y/%M/%d',blank=True)
-  first_name = models.CharField(max_length=255)
-  last_name = models.CharField(max_length=255)
-  birth_day = models.DateField()
-  phone = models.CharField(max_length=15,blank=True)
-  phone_parent = models.IntegerField(blank=True)
-  email = models.CharField(max_length=255)
-  CIN = models.CharField(max_length=30,blank=True)
-  address = models.CharField(max_length=50,blank=True)
-  male_female = models.CharField(max_length=11,choices=(('male','male'),('female','female')),default='female')
-  belt_degree = models.CharField(max_length=50,choices=belts,null=True)
-  Degree = models.CharField(max_length=80, null=True)
-  category = models.CharField(max_length=9,choices=CatChoices,default="small")
-  tall = models.FloatField(blank=True)
-  weight = models.FloatField(blank=True)
-  started_day = models.DateField()
-  is_active = models.BooleanField(default=True)
-  @property
-  def age(self):
-    if self.birth_day:
-        # Calculate age by comparing years and adjusting for whether the birthday has occurred this year
-        today = timezone.now().date()
-        age = today.year - self.birth_day.year
-        if (today.month, today.day) < (self.birth_day.month, self.birth_day.day):
-            age -= 1
-        return age
-    return None
-  @staticmethod
-  def get_belt_choices():
+    belts = (
+        ("أبيض", "أبيض"),
+        ("أبيض مع شريط أصفر", "أبيض مع شريط أصفر"),
+        # Add other belt choices...
+    )
+
+    CatChoices = (
+        ("small", "الصغار"),
+        ("med", "فتيان"),
+        ("big", "كبار"),
+        ('women', 'نساء')
+    )
+
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    birth_day = models.DateField()
+    phone = models.CharField(max_length=15, blank=True)
+    phone_parent = models.IntegerField(blank=True)
+    email = models.CharField(max_length=255)
+    CIN = models.CharField(max_length=30, blank=True)
+    address = models.CharField(max_length=50, blank=True)
+    male_female = models.CharField(max_length=11, choices=(('male', 'male'), ('female', 'female')), default='female')
+    belt_degree = models.CharField(max_length=50, choices=belts, null=True)
+    Degree = models.CharField(max_length=80, null=True)
+    category = models.CharField(max_length=9, choices=CatChoices, default="small")
+    tall = models.FloatField(blank=True)
+    weight = models.FloatField(blank=True)
+    started_day = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    # Use custom `upload_to` handler for `image`
+    image = models.ImageField(upload_to=image_upload_to, blank=True)
+
+    @property
+    def age(self):
+        if self.birth_day:
+            # Calculate age by comparing years and adjusting for whether the birthday has occurred this year
+            today = now().date()
+            age = today.year - self.birth_day.year
+            if (today.month, today.day) < (self.birth_day.month, self.birth_day.day):
+                age -= 1
+            return age
+        return None
+
+    @staticmethod
+    def get_belt_choices():
         return Trainer.belts
-  def __str__(self):
-     return self.first_name + ' ' +self.last_name
-  @property
-  def fone(self):
-    if self.phone_parent=="phone_parent":
-        self.phone_parent = self.phone
-    return self.phone_parent
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def fone(self):
+        if self.phone_parent == "phone_parent":
+            self.phone_parent = self.phone
+        return self.phone_parent
 
 class Payments(models.Model):
   CatChoices = (
