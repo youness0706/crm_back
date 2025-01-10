@@ -21,11 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # Add near the top
-
-WHITENOISE_ROOT = MEDIA_ROOT
-
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
