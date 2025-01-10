@@ -6,9 +6,11 @@ Django==5.1.4
 django-ckeditor==6.7.2
 django-js-asset==3.0.1
 django-storages==1.14.4
+gunicorn==23.0.0
 jmespath==1.0.1
 mysqlclient==2.2.7
 numpy==2.2.1
+packaging==24.2
 pandas==2.2.3
 python-dateutil==2.9.0.post0
 pytz==2024.2
