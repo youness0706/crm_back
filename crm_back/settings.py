@@ -152,6 +152,38 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 CKEDITOR_BASEPATH = "/static/ckeditor/"
 
+#Digital Ocean Spaces
+
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "secret_key":os.environ.get("SECRET_KEY"),
+            "access_key":os.environ.get("ACCESS_KEY"),
+            "bucket_name":"nojoum",
+            "endpoint_url":"https://nyc3.digitaloceanspaces.com",
+            "location":"media",
+            "default_acl":"public-read",
+            "custom_domain":"media.nojoumargana.site",
+             
+        },
+    },
+
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "secret_key":os.environ.get("SECRET_KEY"),
+            "access_key":os.environ.get("ACCESS_KEY"),
+            "bucket_name":"nojoum",
+            "endpoint_url":"https://nyc3.digitaloceanspaces.com",
+            "location":"static",
+            "default_acl":"public-read",
+             
+        },
+    },
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
