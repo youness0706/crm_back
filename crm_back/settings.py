@@ -135,7 +135,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_ROOT= os.path.join(BASE_DIR, 'static')
 STATIC_URL = 'static/'
 STATIC_DIRS= [
     os.path.join(BASE_DIR,'trainers/static/')
@@ -159,18 +158,6 @@ STORAGES = {
             "bucket_name":"nojoum",
             "endpoint_url":"https://nyc3.digitaloceanspaces.com",
             "location":"media",
-            "default_acl":"public-read",
-            "custom_domain":"media.nojoumargana.site",
-             
-        },
-         "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "secret_key":os.environ.get("SECRET_KEY"),
-            "access_key":os.environ.get("ACCESS_KEY"),
-            "bucket_name":"nojoum",
-            "endpoint_url":"https://nyc3.digitaloceanspaces.com",
-            "location":"static",
             "default_acl":"public-read",
             "custom_domain":"media.nojoumargana.site",
              
