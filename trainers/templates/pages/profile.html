@@ -39,8 +39,9 @@
                         <h5 class="my-3">{{ trainers.first_name }} {{ trainers.last_name }}</h5>
                         <div class="mb-2">
                             <span class="badge bg-secondary me-1">{{ trainers.get_category_display }}</span>
-                            <span class="badge bg-info">{{ trainers.belt_degree }}</span>
+                            <span class="badge bg-info"> حزام {{ trainers.belt_degree }}</span>
                         </div>
+                        <span class="font-weight-bold"> المعرف :{{trainers.refrnumber}}</span>
                         <p class="text-muted mb-1">{{ trainers.age }} عاما</p>
                         <div class="d-flex justify-content-center mt-4">
                             <button type="button" onclick="confirmDelete({{ trainers.id }})" class="btn btn-danger me-2">
