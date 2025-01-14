@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% block title %}
     المتدربين
 {% endblock %}
@@ -74,9 +75,12 @@
                                                 {% if i.image %}
                                                 <a href="#"><img src="{{i.image.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
                                                 {% else %}
-                                                <a href="#"><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+                                                <a href="#"><img src="{% static 'images/logo/loginlogo.png' %}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
                                                 {% endif %}
                                             </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <span class="badge refr bg-primary fs-14" >{{i.refrnumber}}</span>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="candidate-list-content mt-3 mt-lg-0">
@@ -121,10 +125,11 @@
         // قم بتصفية القائمة
         trainers.forEach(trainer => {
             // احصل على اسم المتدرب
+            let refrnumber = trainer.querySelector(".refr").textContent.toLowerCase();
             let name = trainer.querySelector(".primary-link").textContent.toLowerCase();
 
             // تحقق مما إذا كان الاسم يتطابق مع النص المدخل
-            if (name.includes(query)) {
+            if (name.includes(query) || refrnumber.includes(query)) {
                 trainer.style.display = ""; // أظهر العنصر
             } else {
                 trainer.style.display = "none"; // أخف العنصر
