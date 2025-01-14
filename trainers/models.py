@@ -42,7 +42,20 @@ class Trainer(models.Model):
         ("big", "كبار"),
         ('women', 'نساء')
     )
-
+    def refrnumberunique():
+        not_unique = True
+        while not_unique:
+            random_number = random.randint(100000,999999)
+            if not Trainer.objects.filter(refrnumber=random_number).exists():
+                not_unique = False
+                 
+        return random_number
+    
+    refrnumber = models.CharField(
+            max_length = 10,
+            blank=True,
+            default=refrnumberunique,
+        )
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     birth_day = models.DateField()
