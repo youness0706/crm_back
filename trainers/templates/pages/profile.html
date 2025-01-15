@@ -47,7 +47,7 @@
                             <button type="button" onclick="confirmDelete({{ trainers.id }})" class="btn btn-danger me-2">
                                 <i class="fas fa-trash-alt"></i> حذف
                             </button>
-                            <a href="{% url 'edit_trainee' trainers.id %}" class="btn btn-primary">
+                            <a href="{% url 'edit_trainee' trainers.id %}" class="btn ml-2 btn-primary">
                                 <i class="fas fa-edit"></i> تعديل
                             </a>
                         </div>
@@ -215,7 +215,7 @@
                                             <p class="card-text">
                                                 <i class="fas fa-calendar me-2"></i><strong>التاريخ:</strong> {{ article.date|date:"d-m-Y" }}<br>
                                                 <i class="fas fa-map-marker-alt me-2"></i><strong>الموقع:</strong> {{ article.location }}<br>
-                                                <i class="fas fa-info-circle me-2"></i><strong>الوصف:</strong> {{ article.content|truncatewords:20|safe }}
+                                                <i class="fas fa-info-circle me-2"></i><strong>النشاط:</strong> {{ article.title }}
                                             </p>
                                             <a href="{% url 'article_detail' article.id %}" class="btn btn-outline-primary btn-sm">
                                                 <i class="fas fa-eye me-1"></i>عرض المزيد
