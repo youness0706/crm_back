@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
 from django.utils.timezone import now
-import os,, random
+import os, random
 
 
 
