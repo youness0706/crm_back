@@ -360,7 +360,7 @@ def added_payment(request):
 
 def payments_history(request):
     if request.user.is_authenticated:
-        context = {'payments':Payments.objects.all()}
+        context = {'payments':Payments.objects.all().order_by('-id')}
         return render(request,"pages/payments_history.html",context)
 
 @login_required(login_url='/login/')
@@ -413,9 +413,16 @@ def trainees(request,category):
 
 
 
+def add_pay_from_prof(request,id,category,amount,date):
+    Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
+    return redirect("profile",id)
 
 @login_required(login_url='/login/')
 def trainee_profile(request, id):
+    if request.method == 'POST':
+        if request.POST['paymentCategry'] and request.POST['paymentAmount'] and request.POST['paymentdate']:
+            add_pay_from_prof(request,id,request.POST['paymentCategry'],request.POST['paymentAmount'],request.POST['paymentdate'])
+            
     # Get all payments for the trainee
     trainee_payments = Payments.objects.filter(trainer_id=id).order_by("paymentdate")  # Adjust as needed
     articles = Article.objects.filter(trainees = Trainer.objects.get(pk=id))
@@ -438,7 +445,9 @@ def trainee_profile(request, id):
             start_month = datetime(start_month.year + 1, 1, 1)
         else:
             start_month = datetime(start_month.year, start_month.month + 1, 1)
-
+    jawaz = Payments.objects.filter(trainer_id=id,paymentCategry='jawaz')
+    assurance = Payments.objects.filter(trainer_id=id,paymentCategry='assurance')
+    subscription = Payments.objects.filter(trainer_id=id,paymentCategry='subscription')
     # Track paid months
     paid_months = {payment.paymentdate.strftime("%Y-%m") for payment in trainee_payments}
 
@@ -448,7 +457,7 @@ def trainee_profile(request, id):
         for month in months
     ]
 
-    return render(request, "pages/profile.html", {"payment_status": payment_status,"trainers":Trainer.objects.get(pk=id),'articles':articles})
+    return render(request, "pages/profile.html", {"payment_status": payment_status,"trainers":Trainer.objects.get(pk=id),'articles':articles,'jawaz':jawaz,'assurance':assurance,'subscription':subscription})
 
 @login_required(login_url='/login/')
 def delete_trainer_view(request, id):
