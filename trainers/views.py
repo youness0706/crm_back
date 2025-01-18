@@ -449,7 +449,7 @@ def trainee_profile(request, id):
     assurance = Payments.objects.filter(trainer_id=id,paymentCategry='assurance')
     subscription = Payments.objects.filter(trainer_id=id,paymentCategry='subscription')
     # Track paid months
-    paid_months = {payment.paymentdate.strftime("%Y-%m") for payment in trainee_payments}
+    paid_months = {payment.paymentdate.strftime("%Y-%m") for payment in trainee_payments.filter(paymentCategry='month')}
 
     # Prepare context with payment status
     payment_status = [
