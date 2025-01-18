@@ -166,21 +166,150 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addPaymentModalLabel"><i class="fas fa-money-bill-wave me-2"></i>إضافة دفعة</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="trainer" value="{{ trainers.id }}">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="paymentdate" class="form-label">تاريخ الدفع:</label>
+                                        <input type="date" name="paymentdate" id="paymentdate" class="form-control" required>
+                                    </div>
+                
+                                    <div class="mb-3">
+                                        <label for="paymentCategry" class="form-label">فئة الدفع:</label>
+                                        <select name="paymentCategry" id="paymentCategry" class="form-control">
+                                            <option value="month" selected>شهرية</option>
+                                            <option value="subscription">انخراط</option>
+                                            <option value="assurance">التأمين</option>
+                                            <option value="jawaz">جواز</option>
+                                        </select>
+                                    </div>
+                
+                                    <div class="mb-3">
+                                        <label for="paymentAmount" class="form-label">مبلغ الدفع:DH</label>
+                                        <input type="number" name="paymentAmount" id="paymentAmount" class="form-control" placeholder="أدخل المبلغ" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                    <button type="submit" class="btn btn-primary">إضافة</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <!-- Payment Status Card -->
+                 <div class="jawaz-payments">
+                    {% if jawaz %}
+                    <div class="card mb-4  text-primary">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>حالة الدفع الجواز</h5>
+                        </div>
+                        
+                        {% for jawa in jawaz %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>تاريخ الدفع</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0">{{ jawa.paymentdate }}</p>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p class="text-center text-muted">
+                            <i class="fas fa-info-circle me-2"></i>لم يتم دفع جواز لهذا المتدرب حتى الآن.
+                        </p>
+                        {% endif %}
+
+                                    
+                 </div>
+                 <div class="assurance-payments">
+                    {% if assurance %}
+                    <div class="card mb-4 text-warning">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>حالة الدفع التأمين</h5>
+                        </div>
+                        {% for assuranc in assurance %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>تاريخ الدفع</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0">{{ assuranc.paymentdate }}</p>
+                                </div>
+                            </div>
+                            <hr>
+
+                        </div>
+                    
+                        {% endfor %}
+                        {% else %}
+                        <p class="text-center text-muted">
+                            <i class="fas fa-info-circle me-2"></i>لم يتم دفع تأمين لهذا المتدرب حتى الآن.
+                        </p>
+                        {% endif %}
+                    
+                </div>
+                <div class="subscription-payments">
+                    {% if subscription %}
+                    <div class="card mb-4 text-secondary">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>حالة الدفع الانخراط</h5>
+                        </div>
+                        {% for subscrip in subscription %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>تاريخ الدفع</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0">{{ subscrip.paymentdate }}</p>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p class="text-center text-muted">
+                            <i class="fas fa-info-circle me-2"></i>لم يتم دفع انخراط لهذا المتدرب حتى الآن.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>حالة الدفع</h5>
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>حالة الدفع الاشهر</h5>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPaymentModal">إضافة دفعة</button>
                     </div>
                     <div class="card-body">
                         <p class="mb-4">
                             <i class="fas fa-circle text-success me-2"></i>الأشهر المدفوعة
                             <i class="fas fa-circle text-danger me-2 ms-4"></i>الأشهر غير المدفوعة
                         </p>
+                        
                         <div class="row">
                             {% for payment in payment_status %}
                             <div class="col-md-4 mb-3">
-                                <p class="mb-1 small">{{ payment.month }}</p>
+                                <p class="mb-1 small">
+                                    {% if payment.status == 'paid' %}
+                                    {{ payment.month }} (مدفوع)
+                                    {% else %}
+                                    {{ payment.month }} (غير مدفوع)
+                                    {% endif %}
+                                </p>
                                 <div class="progress" style="height: 5px;">
                                     <div class="progress-bar {% if payment.status == 'paid' %}bg-success{% else %}bg-danger{% endif %}" 
                                          role="progressbar" 
@@ -244,5 +373,6 @@ function confirmDelete(trainerId) {
         window.location.href = `/delete_trainer/${trainerId}/`;
     }
 }
+
 </script>
 {% endblock %}
