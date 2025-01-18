@@ -90,7 +90,7 @@ def Home(request):
                             month=next_month,
                             year=year
                         )
-                        print(payment_due_date)
+                        
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
@@ -981,7 +981,7 @@ def dashboard(request):
                             month=today.month,
                             year=today.year
                         )
-                        print(payment_due_date)
+                        
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
