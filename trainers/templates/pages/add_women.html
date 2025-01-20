@@ -8,6 +8,13 @@
 
     <div class="h3 text-center text-primary mb-4">استمارة التسجيل للنساء</div>
 
+    {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} border border-secondary alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+    {% endfor %}
+
     <form class="form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
@@ -41,29 +48,29 @@
         <div class="row">
             <div class="col-md-6 mt-md-0 mt-3">
                 <label for="email">البريد الإلكتروني</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="أدخل بريدك الإلكتروني" required>
+                <input type="email" id="email" name="email" class="form-control" placeholder="أدخل بريدك الإلكتروني" >
             </div>
             <div class="col-md-6 mt-md-0 mt-3">
                 <label for="phone">رقم الهاتف</label>
-                <input type="tel" id="phone" name="phone" class="form-control" placeholder="أدخل رقم هاتفك" required>
+                <input type="tel" id="phone" name="phone" class="form-control" placeholder="أدخل رقم هاتفك" >
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mt-md-0 mt-3">
                 <label for="cin">رقم البطاقة الوطنية</label>
-                <input type="text" id="cin" name="cin" class="form-control" placeholder="أدخل رقم بطاقتك الوطنية" required>
+                <input type="text" id="cin" name="cin" class="form-control" placeholder="أدخل رقم بطاقتك الوطنية" >
             </div>
             <div class="col-md-6 mt-md-0 mt-3">
                 <label for="address">العنوان</label>
-                <input type="text" id="address" name="address" class="form-control" placeholder="أدخل عنوانك" required>
+                <input type="text" id="address" name="address" class="form-control" placeholder="أدخل عنوانك" >
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mt-md-0 mt-3">
                 <label for="education">المستوى الدراسي</label>
-                <input type="text" id="education" name="education" class="form-control" placeholder="أدخل مستواك الدراسي" required>
+                <input type="text" id="education" name="education" value="لا يوجد" class="form-control" placeholder="أدخل مستواك الدراسي" >
             </div>
         </div>
 
@@ -71,8 +78,8 @@
             <div class="col-md-6 mt-3">
                 <label for="belt">اختر الحزام</label>
                 <select class="form-select" id="belt" name="belt" required>
-                    <option value="" selected hidden>اختر الحزام</option>
-                    <option value="أبيض">أبيض</option>
+                    <option value="" hidden>اختر الحزام</option>
+                    <option value="أبيض" selected>أبيض</option>
                     <option value="أبيض مع شريط أصفر">أبيض مع شريط أصفر</option>
                     <option value="أصفر">أصفر</option>
                     <option value="أصفر مع شريط أخضر">أصفر مع شريط أخضر</option>
@@ -93,7 +100,7 @@
 
         <div class="input-group mb-3 mt-3">
             <label for="category" class="input-group-text">الفئة</label>
-            <select class="form-select" id="category" name="category" required>
+            <select class="form-select" id="category" name="category" disabled>
                 <option value="women" selected>النساء</option>
                 
             </select>
@@ -103,14 +110,14 @@
             <div class="col-md-6 mt-3">
                 <label for="weight">الوزن (كغ)</label>
                 <div class="input-group">
-                    <input type="number" step="0.01" id="weight" name="weight" class="form-control" placeholder="أدخل وزنك" required>
+                    <input type="number" step="0.01" id="weight" name="weight" class="form-control" placeholder="أدخل وزنك" >
                     <span class="input-group-text">كغ</span>
                 </div>
             </div>
             <div class="col-md-6 mt-3">
                 <label for="height">الطول (متر)</label>
                 <div class="input-group">
-                    <input type="number" step="0.01" id="height" name="height" class="form-control" placeholder="أدخل طولك" required>
+                    <input type="number" step="0.01" id="height" name="height" class="form-control" placeholder="أدخل طولك" >
                     <span class="input-group-text">متر</span>
                 </div>
             </div>

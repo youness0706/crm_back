@@ -9,7 +9,7 @@ urlpatterns = [
     path('add_trainee', views.add_trainee, name='add_trainee'),
     path('addme', views.addme, name='addme'),
     path('addmdone', views.addmedone, name='done'),
-    path('add_women', views.add_women, name='add_women'),
+    path('add_women', views.add_trainee, name='add_women'),
     path('edit_trainee/<int:id>', views.edit_trainee, name='edit_trainee'),
     path("delete_trainer/<int:id>/", views.delete_trainer_view, name="delete_trainer"),
     #payments
@@ -24,6 +24,7 @@ urlpatterns = [
     path('article/<int:id>', views.article_details, name='article_detail'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('edit_article/<int:id>', views.edit_article, name='edit_article'),
+    path('delete_article/<int:id>', views.remove_article, name='delete_article'),
     #Financial
     path('finantial_status/',views.finantial_status,name='finantial_status'),
     path('add_expenses/',views.add_expenses,name='add_expenses'),

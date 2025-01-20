@@ -90,7 +90,7 @@ def Home(request):
                             month=next_month,
                             year=year
                         )
-                        
+                        print(payment_due_date)
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
@@ -286,7 +286,7 @@ def add_trainee(request):
             phone_parent = request.POST.get('phone_parent',0) or 0
             email = request.POST.get('email','None@emale.com')
             address = request.POST.get('address','Argana')
-            cin = request.POST.get('cin')
+            cin = request.POST.get('cin','لا يوجد')
             education = request.POST.get('education')
             belt = request.POST.get('belt')
             if 'upload' in request.FILES:upload = request.FILES['upload']
@@ -294,41 +294,19 @@ def add_trainee(request):
             height = request.POST.get('height',0) or 0
             weight = request.POST.get('weight',0) or 0
 
-            if first_name and last_name and birthday and gender and education and category and cin:
+            if first_name and last_name and birthday and gender and education and category :
+
                 Trainer(first_name=first_name,last_name=last_name,birth_day=birthday,phone=phone,email=email,
                         address=address,CIN=cin, male_female=gender,belt_degree=belt,Degree=education,category=category,
                         started_day=datetime.today(),image=upload,tall=height,weight=weight,phone_parent=phone_parent
                         ).save()
+                messages.success(request, "تمت إضافة المتدرب "+ first_name +" بنجاح")
+            else:
+                messages.error(request, "فشلت عملية الإضافة.")
+        if 'add_women' in request.path:
+            return render(request,"pages/add_women.html")
         return render(request,"pages/add_trainee.html")
 
-@login_required(login_url='/login/')
-def add_women(request):
-        first_name=None; last_name=None; birthday=None; gender=None; phone=None; email=None; category=None; cin=None
-        if request.method == 'POST':
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            birthday = request.POST.get('birthday')
-            gender = request.POST.get('gender')
-            phone = request.POST.get('phone')
-            phone_parent = request.POST.get('phone_parent')
-            email = request.POST.get('email')
-            address = request.POST.get('address')
-            cin = request.POST.get('cin')
-            education = request.POST.get('education')
-            belt = request.POST.get('belt')
-            if 'upload' in request.FILES:upload = request.FILES['upload']
-
-            
-            category = request.POST.get('category')
-            height = request.POST.get('height')
-            weight = request.POST.get('weight')
-
-            if first_name and last_name and birthday and gender and phone and email and category and cin:
-                Trainer(first_name=first_name,last_name=last_name,birth_day=birthday,phone=phone,email=email,
-                        address=address,CIN=cin, male_female=gender,belt_degree=belt,Degree=education,category=category,
-                        started_day=datetime.today(),image=upload,tall=height,weight=weight,phone_parent=phone_parent
-                        ).save()
-        return render(request,"pages/add_women.html")
 
 @login_required(login_url='/login/')
 def add_payment(request):
@@ -540,6 +518,7 @@ def add_article(request):
     return render(request, 'pages/add_Article.htm', {'trainers': trainers, 'date': timezone.now().date()})
 
 
+
 @login_required(login_url='/login/')
 def articles(request,category):
     if category != 'all':
@@ -558,6 +537,11 @@ def article_details(request,id):
     con = {'article' : article
            }
     return render(request,'pages/article_detail.html',con)
+
+@login_required(login_url='/login/')
+def remove_article(request,id):
+    Article.objects.get(pk=id).delete()
+    return redirect('articles','all')
 
 #Financil
 from calendar import monthrange
@@ -600,21 +584,33 @@ def finantial_status(request):
 
     # Calculate recurring staff payments
     staff = Staff.objects.all()
+    staff_totals = []
     for staff_member in staff:
         pay_day = staff_member.datepay.day
-        current_date = staff_member.datepay
-
+        current_date = staff_member.started
+        # Format the date as YYYY MM DD.
+        today_date =datetime.strptime(str(today),"%Y-%m-%d").date() 
         # Count the number of times the pay day occurs in the range
         pay_count = 0
-        while current_date <= end_date:
+        while current_date <= end_date and current_date <= today_date:
             if current_date >= start_date:
+                
                 pay_count += 1
             # Move to the next month
-            days_in_month = monthrange(current_date.year, current_date.month)[1]
-            current_date += timedelta(days=days_in_month)
-
-        staff_total += pay_count * staff_member.salary
-
+            if current_date.month == 12:
+                current_date = current_date.replace(year=current_date.year + 1, month=1)
+            else:
+                days_in_month = monthrange(current_date.year, current_date.month)[1]
+                current_date += timedelta(days=days_in_month)
+        
+        total_salary = pay_count * staff_member.salary
+        staff_total += total_salary
+        if total_salary==0:continue
+        staff_totals.append({
+        "staff_member":staff_member,
+        "total_salary":total_salary,
+        "pay_count":pay_count
+        })
     # Calculate other costs and profits
     date__range = [start, end]
     costs = Costs.objects.filter(date__range=date__range)
@@ -634,6 +630,7 @@ def finantial_status(request):
         'big': payments.filter(trainer_id__category='big').count(),
         'med': payments.filter(trainer_id__category='med').count(),
         'small': payments.filter(trainer_id__category='small').count(),
+        'women': payments.filter(trainer_id__category='women').count(),
     }
 
     # Prepare context
@@ -651,8 +648,10 @@ def finantial_status(request):
         'added_expenses': costs,
         'total_added_costs': total_added_costs,
         'total_article_costs': total_article_costs,
-        'staff': staff,
+        'staff': staff_totals,
         'staff_total': staff_total,  # Total salaries
+        'pay_count': pay_count,
+        'rent_count': rent_count,
         'rent_total': rent_total,  # Total rent
         'org': organization_info,
         'start': start,
@@ -981,7 +980,7 @@ def dashboard(request):
                             month=today.month,
                             year=today.year
                         )
-                        
+                        print(payment_due_date)
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(

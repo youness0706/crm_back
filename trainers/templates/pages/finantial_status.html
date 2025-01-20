@@ -179,6 +179,7 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                         <th>المبلغ</th>
                     </tr>
                 </thead>
@@ -191,6 +192,7 @@
         <td>الكبار : {{numbers.big}}</td>
         <td>الفتيان : {{numbers.med}}</td>
         <td>الصغار : {{numbers.small}}</td>
+        <td>النساء : {{numbers.women}}</td>
         <td>{{payments_total}} DH</td>
     </tr>
     <tr>
@@ -198,6 +200,7 @@
         <td>الدورات التدريبية والاختبارات</td>
         <td></td>
         <td>العدد : {{articles_nb}}</td>
+        <td></td>
         <td></td>
         <td>{{artspro}} DH</td>
     </tr>
@@ -207,6 +210,7 @@
         <td>{{pay.title}}</td>
         <td>{{pay.desc}}</td>
         <td>{{pay.date|date:"M d, Y"}}</td>
+        <td></td>
         <td></td>
         <td>{{ pay.amount }}DH</td>
     </tr>
@@ -254,18 +258,18 @@
                     <td>{{expenses.amount}} DH</td>
                 </tr>
                 {% endfor %}
-                {% for staff in staff %}
+                {% for staf in staff %}
                 <tr>
-                    <td>{{ staff.user.first_name }} {{ staff.user.first_name }}</td>
-                    <td>{{ staff.role }}</td>
+                    <td>{{ staf.staff_member.user.username}}</td>
+                    <td>{{staf.pay_count}}شهر</td>
                     <th></th>
-                    <td>{{staff.datepay}}</td>
-                    <td>{{staff.salary}} DH</td>
+                    <td></td>
+                    <td>{{staf.total_salary}} DH</td>
                 </tr>
                 {% endfor %}
                 <tr>
                     <td>الايجار<td>
-                    <td></td>
+                    <td>{{rent_count}}شهر</td>
                     <th>{{org.datepay}}</th>
                     <td>{{rent_total}} DH</td>
                 </tr>
