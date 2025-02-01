@@ -100,7 +100,8 @@ def Home(request):
                     if today > payment_due_date:
                         unpaid_trainers.append({
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                            'last_payment_date': last_payment.paymentdate
+                            'last_payment_date': last_payment.paymentdate,
+                            'id': trainer.id
                         })
                         
                         
@@ -327,7 +328,7 @@ def add_payment(request):
             
             return redirect('added_payment')  
     
-        trainers = Trainer.objects.all()
+        trainers = Trainer.objects.all().order_by('-id')
         return render(request, 'pages/add_payment.html', {'trainers': trainers})
 
 @login_required(login_url='/login/')
