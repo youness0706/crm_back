@@ -61,7 +61,7 @@
                                         {{ trainer.trainer_name|slice:":1" }}
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">{{ trainer.trainer_name }}</h6>
+                                        <h6 class="mb-0"><a class="text-primary" href="{% url 'profile' trainer.id %}">{{ trainer.trainer_name }}</a></h6>
                                         {% if trainer.last_payment_date %}
                                         <small class="text-muted">آخر دفع: {{ trainer.last_payment_date }}</small>
                                         {% else %}
