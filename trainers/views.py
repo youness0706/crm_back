@@ -101,7 +101,7 @@ def Home(request):
                         unpaid_trainers.append({
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
                             'last_payment_date': last_payment.paymentdate,
-                            'id': trainer.id
+                            'id': trainer.pk
                         })
                         
                         
@@ -109,7 +109,8 @@ def Home(request):
                     # Trainer has never paid in this category
                     unpaid_trainers.append({
                         'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                        'last_payment_date': None
+                        'last_payment_date': None,
+                        'id': trainer.pk
                     })
             
             payment_status[category] = {
