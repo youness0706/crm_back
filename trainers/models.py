@@ -126,6 +126,8 @@ class Article(models.Model):
            ('training','تدريب'),
            ('dawri','دوري'),
            ('test','امتحان'),
+           ('out','خرجة'),
+           ('other','اخرى'),
            )
     date    = models.DateField(default=timezone.now)
     title = models.CharField(max_length=200)
