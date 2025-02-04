@@ -37,8 +37,10 @@
                     <div class="col-md-6 mb-3">
                         <label for="gender" class="form-label">الجنس</label>
                         <select name="gender" id="gender" class="form-select" required>
-                            <option value="male" {% if trainee.gender == 'male' %}selected{% endif %}>ذكر</option>
-                            <option value="female" {% if trainee.gender == 'female' %}selected{% endif %}>أنثى</option>
+                            
+                            <option value="female" {% if trainee.male_female == 'female' %}selected{% endif %}>أنثى</option>
+                            <option value="male" {% if trainee.male_female == 'male' %}selected{% endif %}>ذكر</option>
+                            
                         </select>
                     </div>
                 </div>
@@ -123,6 +125,7 @@
                         <option value="small" {% if trainee.category == "small" %}selected{% endif %}>الصغار</option>
                         <option value="med" {% if trainee.category == "med" %}selected{% endif %}>الفتيان</option>
                         <option value="big" {% if trainee.category == "big" %}selected{% endif %}>الكبار</option>
+                        <option value="women" {% if trainee.category == "women" %}selected{% endif %}>النساء</option>
                     </select>
                 </div>
             </div>
