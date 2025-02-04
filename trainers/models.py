@@ -7,6 +7,7 @@ import os, random
 
 
 
+
 def image_upload_to(instance, filename):
     """
     Custom function to generate the image upload path and filename.
@@ -23,20 +24,18 @@ def image_upload_to(instance, filename):
 class Trainer(models.Model):
     belts = (
         ("أبيض", "أبيض"),
-        ("أصفر", "أصفر"),
         ("برتقالي ","برتقالي"),
+        ("أصفر","أصفر"),
+        ("أصفر مع شريط أخضر","أصفر مع شريط أخضر"),
         ("أخضر","أخضر"),
+        ("أخضر مع شريط أزرق","أخضر مع شريط أزرق"),
         ("أزرق","أزرق"),
-        ("أزرق مع بخط أحمر","أزرق مع بخط أحمر"),
+        ("أزرق مع شريط أحمر","أزرق مع شريط أحمر"),
         ("أحمر","أحمر"),
-        ("أحمر مع بخط أسود","أحمر مع بخط أسود"),
-        ("أحمر بخطين أسودين","أحمر بخطين أسودين"),
-        ("dan1 أسود"," dan1 أسود"),
-        ("dan2 أسود"," dan2 أسود"),
-        ("dan3 أسود"," dan3 أسود"),
-        ("dan4 أسود"," dan4 أسود"),
-        ("dan5 أسود"," dan5 أسود"),
-    )    
+        ("أحمر مع شريط أسود","أحمر مع شريط أسود"),
+        ("أسود","أسود"),
+        
+        )
 
     CatChoices = (
         ("small", "الصغار"),
@@ -44,6 +43,7 @@ class Trainer(models.Model):
         ("big", "كبار"),
         ('women', 'نساء')
     )
+    
     def refrnumberunique():
         not_unique = True
         while not_unique:
@@ -66,7 +66,7 @@ class Trainer(models.Model):
     email = models.CharField(max_length=255)
     CIN = models.CharField(max_length=30, blank=True)
     address = models.CharField(max_length=50, blank=True)
-    male_female = models.CharField(max_length=11, choices=(('male', 'male'), ('female', 'female')), default='female')
+    male_female = models.CharField(max_length=11, choices=(('male', 'male'), ('female', 'female')))
     belt_degree = models.CharField(max_length=50, choices=belts, null=True)
     Degree = models.CharField(max_length=80, null=True)
     category = models.CharField(max_length=9, choices=CatChoices, default="small")
@@ -94,13 +94,15 @@ class Trainer(models.Model):
         return Trainer.belts
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} {self.refrnumber}"
 
     @property
     def fone(self):
         if self.phone_parent == "phone_parent":
             self.phone_parent = self.phone
         return self.phone_parent
+    
+    
 
 class Payments(models.Model):
   CatChoices = (
