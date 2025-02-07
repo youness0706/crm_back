@@ -623,7 +623,7 @@ def finantial_status(request):
     added_payments = Addedpay.objects.filter(date__range=date__range)
     total_added_pay = sum([x.amount for x in added_payments])
     payments = Payments.objects.filter(paymentdate__range=date__range)
-    payments_total = sum([x.paymentAmount for x in payments.filter(paymentCategry='month' or 'subscription')])
+    payments_total =  sum([  x.paymentAmount  for x in payments  ])
     profit = payments_total + total_added_pay + arts_pro
     
     # Count payers by category
