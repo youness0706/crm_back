@@ -77,9 +77,9 @@ def Home(request):
                         # Get the last day of the month for the last payment
                         if today.month == 12:
                             next_month = 1
-                            year = today.year + 1
+                            year = last_payment.paymentdate.year + 1
                         else:
-                            next_month = today.month + 1
+                            next_month = last_payment.paymentdate.month + 1
                             year = today.year
                         last_day_of_payment_month = calendar.monthrange(
                             year,
