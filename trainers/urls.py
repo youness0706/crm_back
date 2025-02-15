@@ -15,6 +15,8 @@ urlpatterns = [
     #payments
     path('add_payment', views.add_payment, name='add_payment'),
     path('added_payment/', views.added_payment, name='added_payment'),
+    path('added_payments_history/', views.added_payments_history, name='added_payments_history'),
+    path('delete_pay/<int:id>', views.delete_pay, name='delete_pay'),
     path('payments_history/', views.payments_history, name='payments_history'),
     path('payments_del/<int:id>', views.payments_del, name='delete_payment'),
     path('payment_edit/<int:id>', views.payment_edit, name='edit_payment'),
@@ -28,6 +30,8 @@ urlpatterns = [
     #Financial
     path('finantial_status/',views.finantial_status,name='finantial_status'),
     path('add_expenses/',views.add_expenses,name='add_expenses'),
+    path('expenses_history/',views.expenses_history,name='expenses_history'),
+    path('expenses_del/<int:id>',views.delete_expense,name='delete_cost'),
     path('add_payments/',views.add_payments,name='add_payments'),
     #Staff managing
     path("add_staff/",views.add_staff,name="add_staff") ,

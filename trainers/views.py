@@ -90,6 +90,8 @@ def Home(request):
                             month=next_month,
                             year=year
                         )
+                        
+                        
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
@@ -585,6 +587,7 @@ def finantial_status(request):
 
     # Calculate recurring staff payments
     staff = Staff.objects.all()
+    
     staff_totals = []
     for staff_member in staff:
         pay_day = staff_member.datepay.day
@@ -603,7 +606,7 @@ def finantial_status(request):
             else:
                 days_in_month = monthrange(current_date.year, current_date.month)[1]
                 current_date += timedelta(days=days_in_month)
-        
+        # Calculate the total salary for this staff member
         total_salary = pay_count * staff_member.salary
         staff_total += total_salary
         if total_salary==0:continue
@@ -614,6 +617,7 @@ def finantial_status(request):
         })
     # Calculate other costs and profits
     date__range = [start, end]
+    payments = Payments.objects.filter(paymentdate__range=date__range)
     costs = Costs.objects.filter(date__range=date__range)
     articles = Article.objects.filter(date__range=date__range)
     total_added_costs = sum([x.amount for x in costs])
@@ -622,8 +626,8 @@ def finantial_status(request):
     arts_pro = sum([x.profit for x in articles])
     added_payments = Addedpay.objects.filter(date__range=date__range)
     total_added_pay = sum([x.amount for x in added_payments])
-    payments = Payments.objects.filter(paymentdate__range=date__range)
-    payments_total =  sum([  x.paymentAmount  for x in payments  ])
+    
+    payments_total = sum([  x.paymentAmount  for x in payments  ])-0.5*sum([x.paymentAmount for x in payments.filter(trainer__category='women',paymentCategry='month')])
     profit = payments_total + total_added_pay + arts_pro
     
     # Count payers by category
@@ -730,6 +734,40 @@ def add_expenses(request):
                 "pages/add_expenses.html",
        )
     #return render(request, "pages/add_expenses.html")
+
+@login_required(login_url='/login/')
+def expenses_history(request):
+    return render(request, "pages/added_expences.html", {'payments': Costs.objects.all()})
+
+@login_required(login_url='/login/')
+def delete_expense(request, id):
+    Costs.objects.get(pk=id).delete()
+    return redirect("expenses_history")
+
+@login_required(login_url='/login/')
+def edit_expense(request, id):
+    expense = get_object_or_404(Costs, id=id)
+
+    if request.method == 'POST':
+        expense.date = request.POST.get('date')
+        expense.desc = request.POST.get('description')
+        expense.amount = request.POST.get('amount')
+        expense.cost = request.POST.get('title')
+        expense.save()
+        messages.success(request, "تم تحديث بيانات المصاريف بنجاح")
+        return redirect('expenses_history')
+
+    return render(request, 'pages/edit_expense.html', {'expense': expense})
+
+@login_required(login_url='/login/')
+def added_payments_history(request):
+    return render(request, "pages/added_payments_history.html", {'payments': Addedpay.objects.all()})
+
+@login_required(login_url='/login/')
+def delete_pay(request, id):
+    Addedpay.objects.get(pk=id).delete()
+    return redirect("added_payments_history")
+
 
 ## MAnagin staff
 
