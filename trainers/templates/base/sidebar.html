@@ -66,8 +66,10 @@
                         <li><a class="dropdown-item" href="{% url 'finantial_status' %}">التقرير المالي</a></li>
                         <hr>
                         <li><a class="dropdown-item" href="{% url 'add_expenses' %}">اضافة مصاريف</a></li>
+                        <li><a class="dropdown-item" href="{% url 'expenses_history' %}">المصاريف المضافة</a></li>
                         <hr>
                         <li><a class="dropdown-item" href="{% url 'add_payments' %}">اضافة مداخيل</a></li>
+                        <li><a class="dropdown-item" href="{% url 'added_payments_history' %}">المداخيل المضافة</a></li>
                     </ul>
                 </li>
                 {% else %}
