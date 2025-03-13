@@ -1250,3 +1250,71 @@ def export_data(request,category):
         # Use Pandas to write the DataFrame to an Excel file
         df.to_excel(response, index=False, engine='openpyxl')
         return response
+
+
+from datetime import datetime, timedelta
+
+def unpaid_trainees(request):
+    # Generate a list of years (e.g., from 2020 to the current year)
+    current_year = datetime.now().year
+    years = range(2020, current_year + 1)
+
+    # List of months
+    months = [
+        (1, 'يناير'), (2, 'فبراير'), (3, 'مارس'), (4, 'أبريل'),
+(5, 'مايو'), (6, 'يونيو'), (7, 'يوليو'), (8, 'أغسطس'),
+(9, 'سبتمبر'), (10, 'أكتوبر'), (11, 'نوفمبر'), (12, 'ديسمبر')
+    ]
+
+    if request.method == 'GET':
+        year = request.GET.get('year')
+        month = request.GET.get('month')
+        cat = request.GET.get('category','all')
+
+        if year and month and cat:
+            # Convert year and month to integers
+            year = int(year)
+            month = int(month)
+
+            # Calculate the start and end dates for the selected month and year
+            start_date = datetime(year, month, 1).date()
+            end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+
+            # Fetch all active trainees
+            if cat == 'all':all_trainees = Trainer.objects.filter(is_active=True)
+            else:all_trainees = Trainer.objects.filter(is_active=True,category=cat)
+            print(all_trainees)
+            # Fetch trainees who have made ANY payment within the selected month
+            paid_trainees_ids = Payments.objects.filter(
+                paymentdate__range=(start_date, end_date),
+                paymentCategry='month'  # Assuming 'month' is the category for monthly payments
+            ).values_list('trainer_id', flat=True).distinct()
+
+            # Exclude trainees who have made ANY payment during the selected month
+            unpaid_trainees = all_trainees.exclude(id__in=paid_trainees_ids)
+
+            # Fetch the last payment date for each unpaid trainee
+            last_payment_dates = {}
+            for trainee in unpaid_trainees:
+                last_payment = Payments.objects.filter(trainer=trainee, paymentCategry='month').order_by('-paymentdate').first()
+                last_payment_dates[trainee.refrnumber] = last_payment.paymentdate if last_payment else None
+
+            # Attach last payment date to each trainee
+            for trainee in unpaid_trainees:
+                trainee.last_payment_date = last_payment_dates.get(trainee.refrnumber, None)
+
+            return render(request, 'pages/unpaid_trainees.html', {
+                'unpaid_trainees': unpaid_trainees,
+                'year': year,
+                'month': month,
+                'years': years,
+                'cat': cat,
+                'months': months,
+                'selected_year': year,
+                'selected_month': month,
+            })
+
+    return render(request, 'pages/unpaid_trainees.html', {
+        'years': years,
+        'months': months,
+    })
