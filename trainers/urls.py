@@ -50,4 +50,6 @@ urlpatterns = [
     #DATA Download
     path('export_data/<str:category>', views.export_data, name='export_data'),
 
+    path('unpaid_trainees/', views.unpaid_trainees, name='unpaid_trainees'),
+
 ]
