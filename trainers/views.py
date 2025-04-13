@@ -401,8 +401,15 @@ def add_pay_from_prof(request,id,category,amount,date):
 @login_required(login_url='/login/')
 def trainee_profile(request, id):
     if request.method == 'POST':
-        if request.POST['paymentCategry'] and request.POST['paymentAmount'] and request.POST['paymentdate']:
-            add_pay_from_prof(request,id,request.POST['paymentCategry'],request.POST['paymentAmount'],request.POST['paymentdate'])
+        if 'paymentCategry[]' in request.POST and request.POST['paymentAmount'] and request.POST['paymentdate']:
+            # Get all selected payment categories
+            payment_categories = request.POST.getlist('paymentCategry[]')
+            payment_amount = request.POST['paymentAmount']
+            payment_date = request.POST['paymentdate']
+            
+            # Create a payment record for each selected category
+            for category in payment_categories:
+                add_pay_from_prof(request, id, category, payment_amount, payment_date)  
             
     # Get all payments for the trainee
     trainee_payments = Payments.objects.filter(trainer_id=id).order_by("paymentdate")  # Adjust as needed
