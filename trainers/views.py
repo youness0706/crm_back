@@ -370,6 +370,124 @@ def payment_edit(request, id):
         return render(request, "pages/edit_payment.html", {"payment": payment})
 
 
+import xlwt
+from django.http import HttpResponse
+
+def export_xls(request):
+    payment_category = request.GET.get("category")
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    trainer_category = request.GET.get("trainer_category")
+
+    payments = Payments.objects.select_related('trainer').all()
+
+    if payment_category:
+        payments = payments.filter(paymentCategry=payment_category)
+    if start_date:
+        payments = payments.filter(paymentdate__gte=start_date)
+    if end_date:
+        payments = payments.filter(paymentdate__lte=end_date)
+    if trainer_category:
+        payments = payments.filter(trainer__category=trainer_category)
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Payments')
+
+    # Define header style
+    header_style = xlwt.XFStyle()
+    header_font = xlwt.Font()
+    header_font.bold = True
+    header_style.font = header_font
+
+    # Headers
+    columns = ['المدرب', 'فئة المتدرب', 'تاريخ الدفع', 'نوع الدفع', 'المبلغ']
+    for col_num, column_title in enumerate(columns):
+        ws.write(0, col_num, column_title, header_style)
+
+    # Data rows
+    for row_num, p in enumerate(payments, start=1):
+        ws.write(row_num, 0, f"{p.trainer.first_name} {p.trainer.last_name}")
+        ws.write(row_num, 1, p.trainer.get_category_display())
+        ws.write(row_num, 2, p.paymentdate.strftime("%Y-%m-%d"))
+        ws.write(row_num, 3, p.get_paymentCategry_display())
+        ws.write(row_num, 4, p.paymentAmount)
+
+    wb.save(response)
+    return response
+
+from django.http import HttpResponse
+import csv
+
+def export_csv(request):
+    payment_category = request.GET.get("category")
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    trainer_category = request.GET.get("trainer_category")
+
+    payments = Payments.objects.select_related('trainer').all()
+
+    if payment_category:
+        payments = payments.filter(paymentCategry=payment_category)
+    if start_date:
+        payments = payments.filter(paymentdate__gte=start_date)
+    if end_date:
+        payments = payments.filter(paymentdate__lte=end_date)
+    if trainer_category:
+        payments = payments.filter(trainer__category=trainer_category)
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=payments.csv"
+
+    writer = csv.writer(response)
+    writer.writerow(["المدرب", "فئة المتدرب", "تاريخ الدفع", "نوع الدفع", "المبلغ"])
+
+    for p in payments:
+        writer.writerow([
+            f"{p.trainer.first_name} {p.trainer.last_name}",
+            p.trainer.get_category_display(),
+            p.paymentdate,
+            p.get_paymentCategry_display(),
+            p.paymentAmount
+        ])
+
+    return response
+
+@login_required(login_url='/login/')
+def download_documents(request):
+    # Get filter values from query params
+    payment_category = request.GET.get("category")
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    trainer_category = request.GET.get("trainer_category")
+
+    payments = Payments.objects.select_related('trainer').all()
+
+    if payment_category:
+        payments = payments.filter(paymentCategry=payment_category)
+
+    if start_date:
+        payments = payments.filter(paymentdate__gte=start_date)
+
+    if end_date:
+        payments = payments.filter(paymentdate__lte=end_date)
+
+    if trainer_category:
+        payments = payments.filter(trainer__category=trainer_category)
+
+    context = {
+        "payments": payments,
+        "categories": Payments.get_catchoices(),
+        "trainer_categories": Trainer.CatChoices,
+        "selected_category": payment_category,
+        "selected_trainer_category": trainer_category,
+        "start_date": start_date,
+        "end_date": end_date,
+    }
+    return render(request, "pages/download_documents.html", context)
+
 
 
 
