@@ -51,5 +51,8 @@ urlpatterns = [
     path('export_data/<str:category>', views.export_data, name='export_data'),
 
     path('unpaid_trainees/', views.unpaid_trainees, name='unpaid_trainees'),
+    #Download reports,
+    path('trainees_report/', views.download_documents, name='trainees_report'),
+    path("export-xls/", views.export_xls, name="export_xls"),
 
 ]
