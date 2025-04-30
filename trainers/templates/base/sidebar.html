@@ -17,6 +17,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'home' %}">الرئيسية</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'trainees_report' %}">تحميل الوثائق</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="traineesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         المتدربون
@@ -41,8 +44,6 @@
                         <li><a class="dropdown-item" href="{% url 'articles' 'dawri' %}">الدوريات</a></li>
                         <li><a class="dropdown-item" href="{% url 'articles' 'training' %}">التداريب</a></li>
                         <li><a class="dropdown-item" href="{% url 'articles' 'League' %}">البطولات</a></li>
-                        <li><a class="dropdown-item" href="{% url 'articles' 'out' %}">الخرجات</a></li>
-                        <li><a class="dropdown-item" href="{% url 'articles' 'other' %}">أخرى</a></li>
                         <li><a class="dropdown-item" href="{% url 'articles' 'all' %}">الكل</a></li>
                         <li><a class="dropdown-item" href="{% url 'add_article' %}">اضافة</a></li>
                     </ul>
@@ -67,10 +68,8 @@
                         <li><a class="dropdown-item" href="{% url 'finantial_status' %}">التقرير المالي</a></li>
                         <hr>
                         <li><a class="dropdown-item" href="{% url 'add_expenses' %}">اضافة مصاريف</a></li>
-                        <li><a class="dropdown-item" href="{% url 'expenses_history' %}">المصاريف المضافة</a></li>
                         <hr>
                         <li><a class="dropdown-item" href="{% url 'add_payments' %}">اضافة مداخيل</a></li>
-                        <li><a class="dropdown-item" href="{% url 'added_payments_history' %}">المداخيل المضافة</a></li>
                     </ul>
                 </li>
                 {% else %}
