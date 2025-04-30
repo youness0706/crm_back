@@ -88,3 +88,4 @@ virtualenv==20.28.0
 wcwidth==0.2.13
 whitenoise==6.8.2
 yarl==1.18.3
+xlwt==1.3.0
