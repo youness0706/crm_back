@@ -369,6 +369,79 @@ def payment_edit(request, id):
         # إذا كانت الطلبية GET، عرض النموذج مع البيانات الحالية
         return render(request, "pages/edit_payment.html", {"payment": payment})
 
+from docx import Document
+from docx.oxml import parse_xml
+from docx.oxml.ns import qn
+from django.http import HttpResponse
+
+
+def add_table_borders(table):
+    tbl = table._element
+    borders = parse_xml(r'''
+    <w:tblBorders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:top w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+        <w:left w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+        <w:right w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="000000"/>
+    </w:tblBorders>
+    ''')
+    tbl.tblPr.append(borders)
+
+
+def clone_table_style(src_table, dst_table):
+    dst_table.style = src_table.style
+    dst_table.autofit = src_table.autofit
+
+
+def copy_header_row(src_table, dst_table):
+    src_row = src_table.rows[0]
+    dst_row = dst_table.rows[0]
+    for i in range(len(src_row.cells)):
+        dst_row.cells[i].text = src_row.cells[i].text
+
+
+def update_word_table(word_file_path, payments, payment_category='assurance'):
+    """
+    Open Word document, clear existing table, and populate with new data.
+    Creates new tables every 18 rows while maintaining original table style and header.
+    """
+    doc = Document(word_file_path)
+
+    # Get the original table and its style
+    original_table = doc.tables[0]
+    original_style = original_table.style
+
+    # Clear all rows except the header
+    for i in range(len(original_table.rows) - 1, 0, -1):
+        original_table._element.remove(original_table.rows[i]._element)
+
+    table = original_table
+    add_table_borders(table)
+
+    for i, p in enumerate(payments, start=1):
+        if i > 1 and (i - 1) % 18 == 0:
+            # Start a new table after 18 rows
+            table = doc.add_table(rows=1, cols=5)
+            clone_table_style(original_table, table)
+            add_table_borders(table)
+            copy_header_row(original_table, table)
+
+        row = table.add_row()
+        row.cells[0].text = str(i)
+        row.cells[1].text = f"{p.trainer.last_name}"
+        row.cells[2].text = f"{p.trainer.first_name}"
+        row.cells[3].text = f"{p.trainer.CIN}"
+        row.cells[4].text = f"{p.trainer.birth_day}"
+
+    # Prepare HTTP response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = f'attachment; filename="payments_{payment_category}.docx"'
+    doc.save(response)
+
+    return response
+
 
 import xlwt
 from django.http import HttpResponse
@@ -381,26 +454,57 @@ def export_xls(request):
 
     payments = Payments.objects.select_related('trainer').all()
 
-    if payment_category:
-        payments = payments.filter(paymentCategry=payment_category)
-    if start_date:
-        payments = payments.filter(paymentdate__gte=start_date)
-    if end_date:
-        payments = payments.filter(paymentdate__lte=end_date)
-    if trainer_category:
-        payments = payments.filter(trainer__category=trainer_category)
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Payments')
-
+    
     # Define header style
     header_style = xlwt.XFStyle()
     header_font = xlwt.Font()
     header_font.bold = True
     header_style.font = header_font
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
+    if payment_category:
+        payments = payments.filter(paymentCategry=payment_category)
+    if start_date:
+        payments = payments.filter(paymentdate__gte=start_date)
+        if end_date:
+            payments = payments.filter(paymentdate__lte=end_date)
+    if payment_category == 'assurance':
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        word_file_path = os.path.join(current_dir, "NOJOUM ARGANA ASSURANCE  N°14.docx")
+        print(word_file_path)
+        print("=================before func========================")
+        # Update the Word document
+        return update_word_table(word_file_path, payments, payment_category)
+        print("=================after func========================")
+        # If you still need Excel output:
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Payments')
+        
+        # Your existing Excel code here...
+        columns = ['ordre', 'prenom', 'nom', 'cin', 'date de naissance']
+        for col_num, column_title in enumerate(columns):
+            ws.write(0, col_num, column_title, header_style)
+            
+        for row_num, p in enumerate(payments, start=1):
+            ws.write(row_num, 0, row_num)
+            ws.write(row_num, 1, f"{p.trainer.first_name}")
+            ws.write(row_num, 2, f"{p.trainer.last_name}")
+            ws.write(row_num, 3, f"{p.trainer.CIN}")
+            ws.write(row_num, 4, f"{p.trainer.birth_day}")
+            
+        wb.save(response)
+        return response
+    if trainer_category:
+        payments = payments.filter(trainer__category=trainer_category)
+    
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
+
+    
+
 
     # Headers
     columns = ['المدرب', 'فئة المتدرب', 'تاريخ الدفع', 'نوع الدفع', 'المبلغ']
@@ -417,6 +521,7 @@ def export_xls(request):
 
     wb.save(response)
     return response
+
 
 from django.http import HttpResponse
 import csv
