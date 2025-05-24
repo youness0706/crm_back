@@ -377,6 +377,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from django.http import HttpResponse
 
 
+
 def add_table_borders(table):
     tbl = table._element
     borders = parse_xml(r'''
@@ -431,8 +432,8 @@ def update_word_table(word_file_path, payments, payment_category='assurance'):
     add_table_borders(table)
 
     for i, p in enumerate(payments, start=1):
-        if i > 1 and (i - 1) % 16 == 0:
-
+        if i > 1 and (i) % 16 == 0:
+            # start a new page
             # Add new table
             table = doc.add_table(rows=1, cols=5) 
             table.autofit = original_table.autofit
@@ -476,54 +477,56 @@ def export_xls(request):
     payments = Payments.objects.select_related('trainer').all()
 
 
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Payments')
     
-    # Define header style
-    header_style = xlwt.XFStyle()
-    header_font = xlwt.Font()
-    header_font.bold = True
-    header_style.font = header_font
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
-    if payment_category:
+    if payment_category and payment_category != "all":
         payments = payments.filter(paymentCategry=payment_category)
-    if start_date:
+    
+    if start_date and start_date != "None":
         payments = payments.filter(paymentdate__gte=start_date)
-        if end_date:
+        if end_date and end_date != "None":
             payments = payments.filter(paymentdate__lte=end_date)
     if payment_category == 'assurance':
         current_dir = os.path.dirname(os.path.abspath(__file__))
         word_file_path = os.path.join(current_dir, "NOJOUM ARGANA ASSURANCE  N°14.docx")
-        print(word_file_path)
+        
         # Update the Word document
         return update_word_table(word_file_path, payments, payment_category)
         
         
-    if trainer_category:
-        payments = payments.filter(trainer__category=trainer_category)
+    else:
+        # Define header style
+        header_style = xlwt.XFStyle()
+        header_font = xlwt.Font()
+        header_font.bold = True
+        header_style.font = header_font
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Payments')
     
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="payments.xls"'
+        # Define header style
+        header_style = xlwt.XFStyle()
+        header_font = xlwt.Font()
+        header_font.bold = True
+        header_style.font = header_font
+       
+        # Headers
+        columns = ['المدرب', 'فئة المتدرب', 'تاريخ الدفع', 'نوع الدفع', 'المبلغ']
+        for col_num, column_title in enumerate(columns):
+            ws.write(0, col_num, column_title, header_style)
 
+        # Data rows
+        for row_num, p in enumerate(payments, start=1):
+            ws.write(row_num, 0, f"{p.trainer.first_name} {p.trainer.last_name}")
+            ws.write(row_num, 1, p.trainer.get_category_display())
+            ws.write(row_num, 2, p.paymentdate.strftime("%Y-%m-%d"))
+            ws.write(row_num, 3, p.get_paymentCategry_display())
+            ws.write(row_num, 4, p.paymentAmount)
+        
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = f'attachment; filename="payments_{datetime.today()}.xls"'
+
+        wb.save(response)
+        return response
     
-
-
-    # Headers
-    columns = ['المدرب', 'فئة المتدرب', 'تاريخ الدفع', 'نوع الدفع', 'المبلغ']
-    for col_num, column_title in enumerate(columns):
-        ws.write(0, col_num, column_title, header_style)
-
-    # Data rows
-    for row_num, p in enumerate(payments, start=1):
-        ws.write(row_num, 0, f"{p.trainer.first_name} {p.trainer.last_name}")
-        ws.write(row_num, 1, p.trainer.get_category_display())
-        ws.write(row_num, 2, p.paymentdate.strftime("%Y-%m-%d"))
-        ws.write(row_num, 3, p.get_paymentCategry_display())
-        ws.write(row_num, 4, p.paymentAmount)
-
-    wb.save(response)
-    return response
 
 def export_csv(request):
     payment_category = request.GET.get("category")
