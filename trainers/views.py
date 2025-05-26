@@ -15,6 +15,12 @@ from django.contrib.auth.decorators import login_required
 
 
 
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+
 @login_required(login_url='/login/')
 def Home(request):
     if request.user.is_superuser:
@@ -77,9 +83,9 @@ def Home(request):
                         # Get the last day of the month for the last payment
                         if today.month == 12:
                             next_month = 1
-                            year = last_payment.paymentdate.year + 1
+                            year = today.year + 1
                         else:
-                            next_month = last_payment.paymentdate.month + 1
+                            next_month = today.month + 1
                             year = today.year
                         last_day_of_payment_month = calendar.monthrange(
                             year,
@@ -90,8 +96,7 @@ def Home(request):
                             month=next_month,
                             year=year
                         )
-                        
-                        
+                        print(payment_due_date)
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
@@ -101,18 +106,18 @@ def Home(request):
                     # Check if payment is overdue
                     if today > payment_due_date:
                         unpaid_trainers.append({
+                            'trainer_id': trainer.id,  # Added trainer ID
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                            'last_payment_date': last_payment.paymentdate,
-                            'id': trainer.pk
+                            'last_payment_date': last_payment.paymentdate
                         })
                         
                         
                 else:
                     # Trainer has never paid in this category
                     unpaid_trainers.append({
+                        'trainer_id': trainer.id,  # Added trainer ID
                         'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                        'last_payment_date': None,
-                        'id': trainer.pk
+                        'last_payment_date': None
                     })
             
             payment_status[category] = {
@@ -160,6 +165,41 @@ def Home(request):
 
         return render(request, "pages/index.html", context)
     return redirect('dashboard')
+
+
+@csrf_exempt
+@require_POST
+def bulk_deactivate_trainers(request):
+    """
+    View to handle bulk deactivation of trainers
+    """
+    if not request.user.is_superuser:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        trainer_ids = data.get('trainer_ids', [])
+        
+        if not trainer_ids:
+            return JsonResponse({'success': False, 'error': 'No trainers selected'})
+        
+        # Update trainers to inactive
+        updated_count = Trainer.objects.filter(
+            id__in=trainer_ids,
+            is_active=True
+        ).update(is_active=False)
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'تم إلغاء تفعيل {updated_count} متدرب بنجاح',
+            'deactivated_count': updated_count
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
 
 
 """
