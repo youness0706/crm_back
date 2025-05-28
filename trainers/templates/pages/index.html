@@ -83,30 +83,32 @@
                 <div class="card-body px-4">
                     <div class="list-group list-group-flush">
                         {% for trainer in status.unpaid_trainers %}
-                        <div class="list-group-item border-0 px-0 py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input trainer-checkbox" type="checkbox" 
-                                               value="{{ trainer.trainer_id }}" 
-                                               id="trainer{{ trainer.trainer_id }}"
-                                               data-category="{{ category }}">
-                                    </div>
-                                    <div class="avatar-circle bg-danger-light me-3">
-                                        {{ trainer.trainer_name|slice:":1" }}
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">{{ trainer.trainer_name }}</h6>
-                                        {% if trainer.last_payment_date %}
-                                        <small class="text-muted">آخر دفع: {{ trainer.last_payment_date }}</small>
-                                        {% else %}
-                                        <small class="text-danger">لم يدفع أبدًا</small>
-                                        {% endif %}
+                            <a class="text-primary" href="{% url 'profile' trainer.trainer_id %}">
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input trainer-checkbox" type="checkbox" 
+                                                       value="{{ trainer.trainer_id }}" 
+                                                       id="trainer{{ trainer.trainer_id }}"
+                                                       data-category="{{ category }}">
+                                            </div>
+                                            <div class="avatar-circle bg-danger-light me-3">
+                                                {{ trainer.trainer_name|slice:":1" }}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ trainer.trainer_name }}</h6>
+                                                {% if trainer.last_payment_date %}
+                                                <small class="text-muted">آخر دفع: {{ trainer.last_payment_date }}</small>
+                                                {% else %}
+                                                <small class="text-danger">لم يدفع أبدًا</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-danger rounded-pill">متأخر</span>
                                     </div>
                                 </div>
-                                <span class="badge bg-danger rounded-pill">متأخر</span>
-                            </div>
-                        </div>
+                            </a>
                         {% endfor %}
                     </div>
                 </div>
