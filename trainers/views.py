@@ -12,6 +12,7 @@ import calendar
 from datetime import timedelta
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -80,23 +81,8 @@ def Home(request):
                     payment_due_date = None
                     
                     if category_info['frequency'] == 'monthly':
-                        # Get the last day of the month for the last payment
-                        if today.month == 12:
-                            next_month = 1
-                            year = today.year + 1
-                        else:
-                            next_month = today.month + 1
-                            year = today.year
-                        last_day_of_payment_month = calendar.monthrange(
-                            year,
-                            next_month
-                        )[1]  # E.g., 28, 29, 30, or 31
-                        payment_due_date = last_payment.paymentdate.replace(
-                            day=min(last_payment.paymentdate.day,last_day_of_payment_month),
-                            month=next_month,
-                            year=year
-                        )
-                        print(payment_due_date)
+                        payment_due_date = last_payment.paymentdate + relativedelta(months=1)
+                        
                     
                     elif category_info['frequency'] == 'yearly':
                         payment_due_date = last_payment.paymentdate.replace(
@@ -104,7 +90,7 @@ def Home(request):
                         ) + timedelta(days=category_info['grace_days'])
 
                     # Check if payment is overdue
-                    if today > payment_due_date:
+                    if today >= payment_due_date:
                         unpaid_trainers.append({
                             'trainer_id': trainer.id,  # Added trainer ID
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
@@ -696,22 +682,32 @@ def trainees(request,category):
 
 
 
-def add_pay_from_prof(request,id,category,amount,date):
-    Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
+def add_pay_from_prof(request,id,category,date):
+    if category == 'jawaz':
+        amount = 150
+        Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
+    elif category == 'assurance':
+        amount = 100
+        Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
+    elif category == 'subscription':
+        amount = 50
+        Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
+    elif category == 'month':
+        amount = 100
+        Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
     return redirect("profile",id)
 
 @login_required(login_url='/login/')
 def trainee_profile(request, id):
     if request.method == 'POST':
-        if 'paymentCategry[]' in request.POST and request.POST['paymentAmount'] and request.POST['paymentdate']:
+        if 'paymentCategry[]' in request.POST and request.POST['paymentdate']:
             # Get all selected payment categories
             payment_categories = request.POST.getlist('paymentCategry[]')
-            payment_amount = request.POST['paymentAmount']
             payment_date = request.POST['paymentdate']
             
             # Create a payment record for each selected category
             for category in payment_categories:
-                add_pay_from_prof(request, id, category, payment_amount, payment_date)  
+                add_pay_from_prof(request, id, category, payment_date)  
             
     # Get all payments for the trainee
     trainee_payments = Payments.objects.filter(trainer_id=id).order_by("paymentdate")  # Adjust as needed
@@ -873,18 +869,19 @@ def finantial_status(request):
     # Initialize totals
     rent_total = 0
     staff_total = 0
-
+    rent_count = 0
     # Calculate recurring rent payments
     organization_info = OrganizationInfo.objects.first() # Assuming one organization info record
+    today = datetime.today().date()
     if organization_info:
         rent_day = organization_info.datepay.day
         current_date = organization_info.datepay
 
         # Count the number of times the rent day occurs in the range
-        rent_count = 0
-        today = datetime.today().date()
+        
+        
         # Format the date as YYYY MM DD.
-        today_date =datetime.strptime(str(today),"%Y-%m-%d").date()
+        today_date = datetime.strptime(str(today), "%Y-%m-%d").date()
         while current_date <= end_date and current_date <= today_date:
             if current_date >= start_date:
                 rent_count += 1
@@ -1592,7 +1589,7 @@ def unpaid_trainees(request):
             # Fetch all active trainees
             if cat == 'all':all_trainees = Trainer.objects.filter(is_active=True)
             else:all_trainees = Trainer.objects.filter(is_active=True,category=cat)
-            print(all_trainees)
+            
             # Fetch trainees who have made ANY payment within the selected month
             paid_trainees_ids = Payments.objects.filter(
                 paymentdate__range=(start_date, end_date),
@@ -1627,3 +1624,101 @@ def unpaid_trainees(request):
         'years': years,
         'months': months,
     })
+
+import openpyxl  
+# adjust to your actual model import
+
+#upload trainers from excel
+
+def upload_trainers_excel(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+
+            added_count = 0
+            for i, row in enumerate(sheet.iter_rows(min_row=2), start=2):  # Skip header
+                try:
+                    first_name = row[0].value
+                    last_name = row[1].value
+                    birthday = row[2].value
+                    gender = row[3].value
+                    phone = row[4].value or 0
+                    phone_parent = row[5].value or 0
+                    email = row[6].value or "None@email.com"
+                    address = row[7].value or "Argana"
+                    cin = row[8].value or "لا يوجد"
+                    education = row[9].value
+                    belt = row[10].value
+                    category = row[11].value
+                    height = row[12].value or 0
+                    weight = row[13].value or 0
+
+                    if first_name and last_name and birthday and gender and education and category:
+                        Trainer.objects.create(
+                            first_name=first_name,
+                            last_name=last_name,
+                            birth_day=birthday,
+                            phone=phone,
+                            phone_parent=phone_parent,
+                            email=email,
+                            address=address,
+                            CIN=cin,
+                            male_female=gender,
+                            belt_degree=belt,
+                            Degree=education,
+                            category=category,
+                            started_day=datetime.today(),
+                            tall=height,
+                            weight=weight
+                        )
+                        added_count += 1
+                except Exception as row_err:
+                    messages.warning(request, f"خطأ في الصف {i}: {str(row_err)}")
+
+            messages.success(request, f"تمت إضافة {added_count} مدرب(ة) بنجاح.")
+            return redirect('upload_trainers_excel')  # replace with your actual URL name
+
+        except Exception as e:
+            messages.error(request, f"حدث خطأ أثناء قراءة الملف: {str(e)}")
+
+    return render(request, "pages/upload_trainers.html")
+
+
+def upload_payments_excel(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+
+            added = 0
+            for i, row in enumerate(sheet.iter_rows(min_row=2), start=2):  # skip headers
+                try:
+                    trainer_id = row[0].value
+                    payment_date = row[1].value or datetime.today()
+                    payment_category = row[2].value or 'month'
+                    payment_amount = row[3].value or 0
+
+                    trainer = Trainer.objects.get(id=trainer_id)
+
+                    Payments.objects.create(
+                        trainer=trainer,
+                        paymentdate=payment_date,
+                        paymentCategry=payment_category,
+                        paymentAmount=payment_amount
+                    )
+                    added += 1
+                except Exception as e:
+                    messages.warning(request, f"⚠️ خطأ في الصف {i}: {str(e)}")
+
+            messages.success(request, f"✅ تمت إضافة {added} دفعة بنجاح.")
+            return redirect('upload_payments_excel')  # change to your actual URL name
+
+        except Exception as e:
+            messages.error(request, f"فشل رفع الملف: {str(e)}")
+
+    return render(request, "pages/upload_payments.html")
