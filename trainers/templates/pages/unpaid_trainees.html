@@ -51,8 +51,16 @@
             <tbody>
                 {% for trainee in unpaid_trainees %}
                 <tr>
-                    <td>{{ trainee.first_name }}</td>
-                    <td>{{ trainee.last_name }}</td>
+                    <td>
+                        <a class="primary-link" href="{% url 'profile' trainee.id %}">
+                        {{ trainee.first_name }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="primary-link" href="{% url 'profile' trainee.id %}">
+                        {{ trainee.last_name }}
+                        </a>
+                    </td>
                     <td>{{ trainee.category }}</td>
                     <td>{{ trainee.belt_degree }}</td>
                     <td>{{ trainee.last_payment_date|default:"لم تسجل أي دفعة" }}</td>
