@@ -324,8 +324,12 @@ def add_trainee(request):
             weight = request.POST.get('weight',0) or 0
 
             if first_name and last_name and birthday and gender and education and category :
-
-                Trainer(first_name=first_name,last_name=last_name,birth_day=birthday,phone=phone,email=email,
+                if Trainer.objects.filter(first_name=first_name, last_name=last_name).exists():
+                    messages.error(request, "المتدرب موجود بالفعل.")
+                    return render(request, "pages/add_trainee.html")
+                # Create a new Trainer instance and save it
+                else:
+                    Trainer(first_name=first_name,last_name=last_name,birth_day=birthday,phone=phone,email=email,
                         address=address,CIN=cin, male_female=gender,belt_degree=belt,Degree=education,category=category,
                         started_day=datetime.today(),image=upload,tall=height,weight=weight,phone_parent=phone_parent
                         ).save()
