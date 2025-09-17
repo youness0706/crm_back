@@ -201,7 +201,6 @@ class Emailed(models.Model):
    email = models.CharField(max_length=3000, blank=True)
    category = models.CharField(max_length=300,default='monthly')
 
-
 #Rawd Models
 
 from django.db import models
