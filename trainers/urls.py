@@ -1,7 +1,8 @@
 from django.urls import path,include
 from . import views
+from .rawd_views import *
 
-urlpatterns = [
+urlpatterns = [ 
     path('', views.Home, name='home'),
     #Trainees
     path('olders/<str:category>', views.trainees, name='trainees'),
@@ -49,7 +50,9 @@ urlpatterns = [
     path('success/', views.success, name='success'),
     #DATA Download
     path('export_data/<str:category>', views.export_data, name='export_data'),
-
+    #Data upload
+    path('upload_data/', views.upload_trainers_excel, name='upload_data'),
+    path('upload_payments',views.upload_payments_excel, name='upload_payments'),
     path('unpaid_trainees/', views.unpaid_trainees, name='unpaid_trainees'),
     #Download reports,
     path('trainees_report/', views.download_documents, name='trainees_report'),
@@ -57,4 +60,5 @@ urlpatterns = [
     # Add this new URL pattern for bulk deactivation
     path('bulk-deactivate-trainers/', views.bulk_deactivate_trainers, name='bulk_deactivate_trainers'),
 
+    
 ]
