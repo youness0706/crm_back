@@ -33,7 +33,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
-ALLOWED_HOSTS = ['127.0.0.1','nojoumargana.site']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -210,4 +210,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'youness.bouhnif.84@edu.uiz.ac.ma'
 EMAIL_HOST_PASSWORD = 'JM1205840000.'
+
 
