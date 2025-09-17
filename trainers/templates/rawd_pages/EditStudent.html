@@ -1,0 +1,82 @@
+{% extends "./base/base.html" %}
+{% block title %}تعديل الطالب{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+  <div class="card shadow-sm rounded-3">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">✏️ تعديل بيانات الطالب</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+
+        <!-- First Name -->
+        <div class="col-12 col-md-6">
+          <label class="form-label">الاسم الشخصي</label>
+          <input type="text" name="fname" value="{{ student.fname }}" class="form-control" required>
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-12 col-md-6">
+          <label class="form-label">اسم العائلة</label>
+          <input type="text" name="lname" value="{{ student.lname }}" class="form-control" required>
+        </div>
+
+        <!-- Gender -->
+        <div class="col-6">
+          <label class="form-label">الجنس</label>
+          <select name="gender" class="form-select" required>
+            <option value="ذكر" {% if student.is_male %}selected{% endif %}>ذكر</option>
+            <option value="أنثى" {% if not student.is_male %}selected{% endif %}>أنثى</option>
+          </select>
+        </div>
+
+        <!-- Grade -->
+        <div class="col-6">
+          <label class="form-label">المستوى / الصف</label>
+          <select name="grade" class="form-select" required>
+            {% for value, label in student.grades %}
+              <option value="{{ value }}" {% if student.grade == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="col-6">
+          <label class="form-label">تاريخ الميلاد</label>
+          <input type="date" name="date_of_birth" value="{{ student.date_of_birth|date:'Y-m-d' }}" class="form-control">
+        </div>
+
+        <!-- Parent Name -->
+        <div class="col-6">
+          <label class="form-label">اسم ولي الأمر</label>
+          <input type="text" name="parent_name" value="{{ student.parent_name }}" class="form-control">
+        </div>
+
+        <!-- Parent Phone -->
+        <div class="col-12">
+          <label class="form-label">هاتف ولي الأمر</label>
+          <input type="text" name="parent_phone" value="{{ student.parent_phone }}" class="form-control">
+        </div>
+
+        <!-- Active -->
+        <div class="col-12 form-check">
+          <input type="checkbox" name="is_active" class="form-check-input" id="is_active"
+                 {% if student.is_active %}checked{% endif %}>
+          <label class="form-check-label" for="is_active">الطالب نشط</label>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="upload">ارفع صورة جديدة (اختياري)</label>
+          <input type="file" id="upload" name="upload" accept="image/*" class="form-control">
+        </div>
+        <!-- Submit -->
+        <div class="col-12 d-grid">
+          <button type="submit" class="btn btn-success">💾 حفظ التغييرات</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

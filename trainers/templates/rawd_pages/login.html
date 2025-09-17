@@ -1,0 +1,31 @@
+{% extends "./base/base.html" %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="card shadow rounded-3 p-4" style="max-width: 400px; width: 100%;">
+    
+    <h3 class="text-center mb-4">تسجيل الدخول</h3>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center py-2">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" action="">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="username" class="form-label">اسم المستخدم</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="أدخل اسم المستخدم" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">كلمة المرور</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="أدخل كلمة المرور" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">دخول</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

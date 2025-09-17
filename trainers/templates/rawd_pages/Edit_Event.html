@@ -1,0 +1,78 @@
+{% extends './base/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">✏️ تعديل النشاط</h4>
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">عنوان النشاط</label>
+      <input type="text" name="title" class="form-control" value="{{ event.title }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">نوع النشاط</label>
+      <select name="event_type" class="form-select">
+        <option value="trip" {% if event.event_type == "trip" %}selected{% endif %}>رحلة</option>
+        <option value="party" {% if event.event_type == "party" %}selected{% endif %}>حفلة</option>
+        <option value="tournament" {% if event.event_type == "tournament" %}selected{% endif %}>بطولة</option>
+        <option value="other" {% if event.event_type == "other" %}selected{% endif %}>آخر</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">التاريخ</label>
+      <input type="date" name="date" class="form-control" value="{{ event.date|date:'Y-m-d' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">السعر لكل مشارك (درهم)</label>
+      <input type="number" step="0.01" name="price_per_participant" class="form-control" value="{{ event.price_per_participant }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">المصاريف (درهم)</label>
+      <input type="number" step="0.01" name="total_expense" class="form-control" value="{{ event.total_expense }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">الوصف</label>
+      <textarea name="description" class="form-control">{{ event.description }}</textarea>
+    </div>
+
+    <!-- المشاركون -->
+    <div class="mb-3">
+      <label class="form-label">المشاركون</label>
+      <select name="participants" id="participants" class="form-select" multiple>
+        {% for student in students %}
+          <option value="{{ student.id }}" {% if student in event.participants.all %}selected{% endif %}>
+            {{ student.fname }} {{ student.lname }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">💾 تحديث</button>
+  </form>
+</div>
+
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#participants').select2({
+      placeholder: "ابحث عن الطلاب",
+      width: '100%',
+      allowClear: true,
+      language: {
+        noResults: function() {
+          return "لا يوجد نتائج";
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

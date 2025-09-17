@@ -1,0 +1,48 @@
+{% extends "./base/base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">🏫 تعديل معلومات المدرسة</h2>
+
+  <form method="POST" class="card shadow rounded-3 p-4">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">📛 اسم المدرسة</label>
+      <input type="text" class="form-control" name="name" 
+             value="{{ school.name|default:'' }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">📍 العنوان</label>
+      <input type="text" class="form-control" name="address" 
+             value="{{ school.address|default:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">📞 الهاتف</label>
+      <input type="text" class="form-control" name="phone" 
+             value="{{ school.phone|default:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">📧 البريد الإلكتروني</label>
+      <input type="email" class="form-control" name="email" 
+             value="{{ school.email|default:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">📅 سنة التأسيس</label>
+      <input type="number" class="form-control" name="established_year" 
+             value="{{ school.established_year|default:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">💵 مبلغ الإيجار</label>
+      <input type="number" step="0.01" class="form-control" name="rent_amount" 
+             value="{{ school.rent_amount|default:'' }}">
+    </div>
+
+    <button type="submit" class="btn btn-success">💾 حفظ</button>
+    <a href="{% url 'rawd_info' %}" class="btn btn-secondary">↩️ رجوع</a>
+  </form>
+</div>
+{% endblock %}
