@@ -647,3 +647,42 @@ def remove_staff(request,id):
     staff.user.delete()  # حذف المستخدم المرتبط
     staff.delete()
     return redirect('rawd_info')
+
+def addme(request):
+    if request.method != 'POST':
+        return render(request, 'rawd_pages/addstudent.html')
+    if 'upload' in request.FILES:
+        upload = request.FILES['upload']
+    else:
+        upload = None
+    fname = request.POST.get("first_name")
+    lname = request.POST.get("last_name")
+    grade = request.POST.get("grade")
+    parent_name = request.POST.get("parent_name")
+    parent_phone = request.POST.get("parent_phone")
+    date_of_birth = request.POST.get("date_of_birth")
+    enrollment_date = request.POST.get("enrollment_date")
+    gender = request.POST.get("gender")
+
+    # Create a new student instance
+    checkrepeat = Student.objects.filter(fname=fname, lname=lname, grade=grade).exists()
+    if not checkrepeat:
+        student = Student.objects.create(
+            school=School.objects.first(),  # Assuming a default school for simplicity
+            fname=fname,
+            lname= lname,
+            grade=grade,
+            parent_name=parent_name,
+            parent_phone=parent_phone,
+            date_of_birth=date_of_birth if date_of_birth else None,
+            enrollment_date=enrollment_date if enrollment_date else None,
+            is_male=gender == "male",
+            is_active=True,
+            image = upload
+        )
+        student.save()
+        return redirect('addmedone')
+    else:
+        return render(request, 'rawd_pages/addstudent.html', {'error': 'Student already exists.'})
+def addmedone(request):
+    return render(request, 'rawd_pages/addmedone.html')

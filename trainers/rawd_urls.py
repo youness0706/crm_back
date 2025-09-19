@@ -30,4 +30,6 @@ urlpatterns = [
     path('rawd_info/', rawd_info_page, name='rawd_info'),
     path('edit_rawd_info/', edit_rawd_info, name='edit_rawd_info'),
     path('remove_staff/<int:id>/', remove_staff, name='remove_staff'),
+    path('addme/', addme, name='addme'),
+    path('addmedone/', addmedone, name='addmedone'),
 ]
