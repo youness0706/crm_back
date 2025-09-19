@@ -215,19 +215,6 @@ def search_students(request):
     ]
     return JsonResponse({"results": results})
 
-
-def rawd_reports(request):
-    if not request.user.is_authenticated:
-        return redirect('rawd_login')
-    return render(request, 'rawd_pages/reports.html')
-
-
-def rawd_settings(request):
-    if not request.user.is_authenticated:
-        return redirect('rawd_login')
-    return render(request, 'rawd_pages/settings.html')
-
-
 def rawd_students(request):
     if not request.user.is_authenticated:
         return redirect('rawd_login')
