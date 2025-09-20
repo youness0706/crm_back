@@ -108,6 +108,7 @@ class StudentPayment(models.Model):
     paymentTypes = (
         ("monthly", "شهري"),
         ("annual", "سنوي"),
+        ("assurance", "تأمين")
     )
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="payments")
     type = models.CharField(max_length=100, verbose_name="نوع الدفع", choices=paymentTypes)
