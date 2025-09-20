@@ -1,138 +1,87 @@
-{% extends 'base/base.html' %}
-{% block title %}
-    تسجيل المتدربين الجدد
-{% endblock %}
+{% extends './base/base.html' %}
+{% block title %}إضافة طالب جديد{% endblock %}
 {% block content %}
 
-<div class="wrapper rounded bg-light p-4 shadow-sm">
 
-    <div class="h3 text-center text-primary mb-4">استمارة التسجيل</div>
-
-    <form class="form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="first_name">الاسم الأول</label>
-                <input type="text" id="first_name" name="first_name" class="form-control" placeholder="أدخل اسمك الأول" required>
-            </div>
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="last_name">الاسم العائلي</label>
-                <input type="text" id="last_name" name="last_name" class="form-control" placeholder="أدخل اسمك العائلي" required>
-            </div>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-primary text-white text-center">
+          <h4>➕ إضافة طالب جديد</h4>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="birthday">تاريخ الميلاد</label>
-                <input type="date" id="birthday" name="birthday" class="form-control" required>
-            </div>
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label>الجنس</label>
-                <div class="d-flex align-items-center mt-2">
-                    <label class="option">
-                        <input type="radio" name="gender" value="male" > ذكر
-                        <span class="checkmark"></span>
-                    </label>
-                    <label class="option ms-4">
-                        <input type="radio" name="gender" value="female" checked> أنثى
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
+        <div class="card-body p-4">
+          {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+          {% endif %}
 
-        <div class="row">
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="email">البريد الإلكتروني</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="أدخل بريدك الإلكتروني" >
-            </div>
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="phone">رقم هاتف المتدرب</label>
-                <input type="tel" id="phone" name="phone" class="form-control" placeholder="أدخل رقم هاتفك" >
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">الاسم الشخصي</label>
+                <input type="text" name="first_name" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">اسم العائلة</label>
+                <input type="text" name="last_name" class="form-control" required>
+              </div>
             </div>
 
-        </div>
-        <div class="col-md-6 mt-md-0 mt-3">
-            <label for="phone_parent">رقم هاتف ولي الأمر</label>
-            <input type="tel" id="phone_parent" name="phone_parent" class="form-control" placeholder="أدخل رقم هاتفك" >
-        </div>
+            <div class="mb-3">
+              <label class="form-label">الجنس</label>
+              <select name="gender" class="form-select" required>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+            </div>
 
-        <div class="row">
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="cin">رقم البطاقة الوطنية</label>
-                <input type="text" id="cin" name="cin" class="form-control" placeholder="أدخل رقم بطاقتك الوطنية" required>
+            <div class="mb-3">
+              <label class="form-label">تاريخ الميلاد</label>
+              <input type="date" name="date_of_birth" class="form-control">
             </div>
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="address">العنوان</label>
-                <input type="text" id="address" name="address" class="form-control" placeholder="أدخل عنوانك" required>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="education">المستوى الدراسي</label>
-                <input type="text" id="education" name="education" class="form-control" placeholder="أدخل مستواك الدراسي" required>
+            <div class="mb-3">
+              <label class="form-label">المستوى / الصف</label>
+              <select name="grade" class="form-select" required>
+                <option value="1">صف الصغار</option>
+                <option value="2">الصف المتوسط</option>
+                <option value="3">صف الكبار</option>
+              </select>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6 mt-3">
-                <label for="belt">اختر الحزام</label>
-                <select class="form-select" id="belt" name="belt" >
-                    <option value=""  hidden>اختر الحزام</option>
-                    <option value="أبيض" selected>أبيض</option>                    
-                    <option value="أصفر">أصفر</option>
-                    <option value="برتقالي">برتقالي</option>
-                    <option value="أخضر">أخضر</option>
-                    <option value="أزرق">أزرق</option>
-                    <option value="أزرق بخط أحمر">أزرق بخط أحمر</option>
-                    <option value="أزرق مع بخطين أحمرين">أزرق بخطين أحمرين</option>
-                    <option value="أحمر">أحمر</option>
-                    <option value="أحمر بخط أسود">أحمر بخط أسود</option>
-                    <option value="أحمر مع بخطين أسودين">أحمر بخطين أسودين</option>
-                    <option value="dan1 أسود">أسود dan1</option>
-                    <option value="dan2 أسود">أسود dan2</option>
-                    <option value="dan3 أسود">أسود dan3</option>
-                    <option value="dan4 أسود">أسود dan4</option>
-                    <option value="dan5 أسود">أسود dan5</option> 
-                </select>
+            <div class="mb-3">
+              <label class="form-label">اسم ولي الأمر</label>
+              <input type="text" name="parent_name" class="form-control">
             </div>
-            <div class="col-md-6 mt-md-0 mt-3">
-                <label for="upload">ارفع صورة</label>
+
+            <div class="mb-3">
+              <label class="form-label">هاتف ولي الأمر</label>
+              <input type="text" name="parent_phone" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">تاريخ التسجيل</label>
+              <input type="date" name="enrollment_date" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="upload">ارفع صورة</label>
                 <input type="file" id="upload" name="upload" accept="image/*" class="form-control">
             </div>
-        </div>
-
-        <div class="input-group mb-3 mt-3">
-            <label for="category" class="input-group-text">الفئة</label>
-            <select class="form-select" id="category" name="category" required>
-                <option value=""  hidden>اختر الفئة</option>
-                <option value="small" selected>الصغار</option>
-                <option value="med">الفتيان</option>
-                <option value="big">الكبار</option>
-            </select>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mt-3">
-                <label for="weight">الوزن (كغ)</label>
-                <div class="input-group">
-                    <input type="number" step="0.01" id="weight" name="weight" class="form-control" placeholder="أدخل وزنك" >
-                    <span class="input-group-text">كغ</span>
-                </div>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-success px-4">💾 حفظ</button>
+              <a href="{% url 'students' %}" class="btn btn-secondary px-4">⬅️ رجوع</a>
             </div>
-            <div class="col-md-6 mt-3">
-                <label for="height">الطول (متر)</label>
-                <div class="input-group">
-                    <input type="number" step="0.01" id="height" name="height" class="form-control" placeholder="أدخل طولك" >
-                    <span class="input-group-text">متر</span>
-                </div>
-            </div>
+
+          </form>
         </div>
+      </div>
 
-        <button type="submit" class="btn btn-primary mt-4 w-100">إرسال</button>
-    </form>
-
+    </div>
+  </div>
 </div>
 
 {% endblock %}

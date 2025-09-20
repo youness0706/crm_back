@@ -14,8 +14,9 @@
   </style>
 </head>
 <body>
-
+{% if 'addme' not in request.path %}
   {% include './sidebar.html' %}
+{% endif %}
   <!-- Main Content -->
   <main class="container-fluid mt-4">
     {% block content %}

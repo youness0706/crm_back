@@ -1,124 +1,104 @@
-{% extends 'base/base.html' %}
-{% block title %}
-    الرئيسية
-{% endblock %}
-{% block content %}    
+{% extends "./base/base.html" %}
+{% block content %}
+<div class="container mt-4" dir="rtl">
 
-    <!-- Styled Payment Status Details -->
-    <div class="container-fluid mt-3">
-        <div class="row ml-0">
-            {% for category, status in payment_status.items %}
-            <div class="col-md-4 col-sm-6 col-12 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-gradient-danger text-white py-3">
-                        <h6 class="m-0 font-weight-bold">{{ status.label }} - غير مدفوعة</h6>
-                    </div>
-                    <div class="card-body px-4">
-                        <div class="list-group list-group-flush">
-                            {% for trainer in status.unpaid_trainers %}
-                            <div class="list-group-item border-0 px-0 py-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle bg-danger-light me-3">
-                                            {{ trainer.trainer_name|slice:":1" }}
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ trainer.trainer_name }}</h6>
-                                            {% if trainer.last_payment_date %}
-                                            <small class="text-muted">آخر دفع: {{ trainer.last_payment_date }}</small>
-                                            {% else %}
-                                            <small class="text-danger">لم يدفع أبدًا</small>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-danger rounded-pill">متأخر</span>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+  <h2 class="mb-4">🏠 الصفحة الرئيسية</h2>
 
-        <!-- Styled Paid Today Trainees -->
-        <div class="row ml-0">
-            <div class="col-md-12 col-sm-12 col-12 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-gradient-success text-white py-3">
-                        <h6 class="m-0 font-weight-bold">الدين دفعوا اليوم</h6>
-                    </div>
-                    <div class="card-body px-4">
-                        <div class="list-group list-group-flush">
-                            {% for trainee in paid_today_trainees %}
-                            <div class="list-group-item border-0 px-0 py-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle bg-success me-3">
-                                            {{ trainee.trainer_name|slice:":1" }}
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ trainee.trainer_name }}</h6>
-                                            <small class="text-muted">{{ trainee.payment_date }}</small>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <span class="badge badge-success">{{ trainee.payment_category }}</span>
-                                        <span class="badge badge-primary">{{ trainee.payment_amount }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- البطاقات -->
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي الطلاب</h5>
+          <h2>{{ total_students }}</h2>
+          <small class="text-light">+{{ new_students }} هذا الأسبوع</small>
         </div>
+      </div>
     </div>
 
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي الدخل</h5>
+          <h2>{{ total_income }} درهم</h2>
+        </div>
+      </div>
+    </div>
 
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي المصاريف</h5>
+          <h2>{{ total_expenses }} درهم</h2>
+        </div>
+      </div>
+    </div>
 
-<!-- Charts.js Library -->
+    <div class="col-md-3">
+      <div class="card text-white bg-dark shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>صافي الربح</h5>
+          <h2>{{ net_profit }} درهم</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow rounded-3">
+        <div class="card-header bg-info text-white">
+          <h5>روابط سريعة</h5>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'students' %}" class="btn btn-outline-primary me-2">👩‍🎓 قائمة الطلاب</a>
+          <a href="{% url 'payments' %}" class="btn btn-outline-success me-2">💰 قائمة المدفوعات</a>
+          <a href="{% url 'expenses' %}" class="btn btn-outline-danger me-2">📉 قائمة المصاريف</a>
+          <a href="{% url 'rawd_financials' %}" class="btn btn-outline-dark">📊 التحليلات المالية</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- الرسم البياني -->
+  <div class="card shadow mt-5">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">📊 مقارنة الدخل والمصاريف (آخر 6 أشهر)</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="financeChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-.avatar-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
-    background-color: rgba(220, 53, 69, 0.1);
-}
-
-.bg-gradient-danger {
-    background: linear-gradient(45deg, #dc3545, #ff6b6b);
-}
-
-.bg-danger-light {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-}
-
-.card {
-    transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.list-group-item {
-    transition: background-color 0.2s ease-in-out;
-}
-
-.list-group-item:hover {
-    background-color: rgba(0, 0, 0, 0.02);
-}
-</style>
-
+<script>
+  const ctx = document.getElementById("financeChart").getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: {{ labels|safe }},
+      datasets: [
+        {
+          label: "الدخل",
+          data: {{ income_data|safe }},
+          borderColor: "#4caf50",
+          backgroundColor: "rgba(76,175,80,0.2)",
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: "المصاريف",
+          data: {{ expense_data|safe }},
+          borderColor: "#f44336",
+          backgroundColor: "rgba(244,67,54,0.2)",
+          tension: 0.3,
+          fill: true
+        }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+  });
+</script>
 {% endblock %}
