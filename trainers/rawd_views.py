@@ -650,7 +650,7 @@ def remove_staff(request,id):
 
 def addme(request):
     if request.method != 'POST':
-        return render(request, 'rawd_pages/addstudent.html')
+        return render(request, 'rawd_pages/addme.html')
     if 'upload' in request.FILES:
         upload = request.FILES['upload']
     else:
