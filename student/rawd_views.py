@@ -292,7 +292,7 @@ def rawd_student_profile(request, pk):
     else:
         form = StudentPaymentForm()
     
-    return render(request, 'rawd_pages/StuedentProfile.html', {
+    return render(request, 'rawd_pages/stuedentprofile.html', {
         'student': student,
         'payments': payments,
         'form': form
