@@ -1,0 +1,46 @@
+{% extends './base/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">📋 الأنشطة</h4>
+
+  {% if events %}
+    <div class="row g-3">
+      {% for event in events %}
+        <div class="col-12">
+          <div class="card shadow-sm rounded-3">
+            <div class="card-body">
+              <h5 class="card-title text-primary">
+                {{ event.title }}
+                <span class="badge bg-info text-dark">{{ event.get_event_type_display }}</span>
+              </h5>
+              <p class="card-text text-muted mb-1">
+                🗓️ {{ event.date|date:"Y-m-d" }}
+              </p>
+              <p class="mb-1">💵 السعر للفرد: <strong>{{ event.price_per_participant }} درهم</strong></p>
+              <p class="mb-1">👥 عدد المشاركين: <strong>{{ event.participants.count }}</strong></p>
+              <p class="mb-1">💰 الدخل الكلي: 
+                <strong>{{ event.participants.count|add:"0"|floatformat:0|default:"0"|floatformat:0|add:"0" }} × {{ event.price_per_participant }} = {{ event.profit }} درهم</strong>
+              </p>
+              <p class="mb-1">📉 المصاريف: <strong>{{ event.total_expense }} درهم</strong></p>
+              <p class="mb-1">📊 الربح الصافي: 
+                <strong class="{% if event.profit|floatformat:0|default:0|add:"0" < event.total_expense %}text-danger{% else %}text-success{% endif %}">
+                  {{ event.profit }} - {{ event.total_expense }} = 
+                  {{ event.profit|default:0|floatformat:0|add:"0" |floatformat:0|add:"0" |floatformat:0 }}
+                </strong>
+              </p>
+
+              <!-- الأزرار -->
+              <div class="d-flex justify-content-between mt-3">
+                <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-warning">✏️ تعديل</a>
+                <a href="{% url 'remove_event' event.id %}" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')">🗑️ حذف</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">🚫 لا توجد أنشطة بعد.</div>
+  {% endif %}
+</div>
+{% endblock %}

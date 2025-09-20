@@ -1,0 +1,104 @@
+{% extends "./base/base.html" %}
+{% block title %}ملف الطالب{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">👤 ملف الطالب</h3>
+        <div class="d-flex gap-2">
+            <a href="{% url 'students' %}" class="btn btn-sm btn-outline-secondary">⬅ رجوع</a>
+            <a href="{% url 'edit_student' student.id %}" class="btn btn-sm btn-outline-primary">✏ تعديل</a>
+            <a href="{% url 'remove_student' student.id %}" class="btn btn-sm btn-outline-danger">🗑 حذف</a>
+        </div>
+    </div>
+
+    <!-- Student Card -->
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <div class="row g-0">
+            <div class="col-md-3 text-center p-3">
+                {% if student.image %}
+                    <img src="{{ student.image.url }}" alt="صورة الطالب"
+                         class="img-fluid rounded-circle shadow-sm border"
+                         style="max-width: 150px;">
+                {% else %}
+                    <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                         style="width:150px; height:150px; font-size:50px;">
+                         📷
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-9">
+                <div class="card-body">
+                    <h4 class="card-title fw-bold mb-2">{{ student.fname }} {{ student.lname }}</h4>
+                    <p class="mb-1"><strong>📅 تاريخ الميلاد:</strong>
+                        {{ student.date_of_birth|date:"d/m/Y" }}</p>
+                    <p class="mb-1"><strong>🎓 المستوى/الصف:</strong>
+                        <span class="badge bg-primary">{{ student.get_grade_display }}</span>
+                    </p>
+                    <p class="mb-1"><strong>👨‍👩‍👦 ولي الأمر:</strong> {{ student.parent_name }}</p>
+                    <p class="mb-1"><strong>📞 هاتف ولي الأمر:</strong> {{ student.parent_phone }}</p>
+                    <p class="mb-1"><strong>📌 تاريخ التسجيل:</strong>
+                        {{ student.enrollment_date|date:"d/m/Y" }}</p>
+                    <p class="mb-0"><strong>⚧ الجنس:</strong>
+                        {% if student.is_male %} ذكر {% else %} أنثى {% endif %}
+                    </p>
+                    <p class="mt-2"><strong>الحالة:</strong>
+                        {% if student.is_active %}
+                            <span class="badge bg-success">نشط</span>
+                        {% else %}
+                            <span class="badge bg-secondary">غير نشط</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments History -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="fw-bold">💰 السجل المالي</h5>
+        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+            ➕ إضافة دفعة
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+                {% for p in payments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>📅 {{ p.date|date:"d/m/Y" }} - {{ p.get_type_display }}</span>
+                        <span class="fw-bold text-success">{{ p.amount }} درهم</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">لا توجد دفعات بعد</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Payment -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">➕ إضافة دفعة جديدة</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="submit" class="btn btn-success">💾 حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

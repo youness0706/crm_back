@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'trainers.apps.TrainersConfig',
+    'student.apps.StudentConfig',
     'ckeditor',
     'django.contrib.humanize',
     'storages',

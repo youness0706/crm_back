@@ -1,0 +1,87 @@
+{% extends './base/base.html' %}
+{% block title %}إضافة طالب جديد{% endblock %}
+{% block content %}
+
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-primary text-white text-center">
+          <h4>➕ إضافة طالب جديد</h4>
+        </div>
+
+        <div class="card-body p-4">
+          {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">الاسم الشخصي</label>
+                <input type="text" name="first_name" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">اسم العائلة</label>
+                <input type="text" name="last_name" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">الجنس</label>
+              <select name="gender" class="form-select" required>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">تاريخ الميلاد</label>
+              <input type="date" name="date_of_birth" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">المستوى / الصف</label>
+              <select name="grade" class="form-select" required>
+                <option value="1">صف الصغار</option>
+                <option value="2">الصف المتوسط</option>
+                <option value="3">صف الكبار</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">اسم ولي الأمر</label>
+              <input type="text" name="parent_name" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">هاتف ولي الأمر</label>
+              <input type="text" name="parent_phone" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">تاريخ التسجيل</label>
+              <input type="date" name="enrollment_date" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="upload">ارفع صورة</label>
+                <input type="file" id="upload" name="upload" accept="image/*" class="form-control">
+            </div>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-success px-4">💾 حفظ</button>
+              <a href="{% url 'students' %}" class="btn btn-secondary px-4">⬅️ رجوع</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

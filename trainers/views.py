@@ -2,17 +2,20 @@ from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render,redirect,get_object_or_404
 from django.utils.timezone import datetime
-from django.db.models import Sum
+from django.db.models import Sum, F, Count
 from .models import *
 import json
 from django.contrib import messages
 from django.utils import timezone
-from .models import Trainer, Payments
 import calendar
 from datetime import timedelta
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from dateutil.relativedelta import relativedelta
+
+
+
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST

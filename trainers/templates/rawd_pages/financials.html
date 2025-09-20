@@ -1,122 +1,0 @@
-{% extends "./base/base.html" %}
-{% block content %}
-<div class="container mt-4">
-
-  <h4 class="mb-4">📊 التقرير المالي التفصيلي</h4>
-
-  <!-- اختيار الفترة -->
-  <form method="get" class="row g-2 mb-4">
-    <div class="col-md-4">
-      <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
-    </div>
-    <div class="col-md-4">
-      <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
-    </div>
-    <div class="col-md-4">
-      <button type="submit" class="btn btn-primary w-100">🔄 تحديث</button>
-    </div>
-  </form>
-
-  <!-- الملخص -->
-  <div class="row text-center mb-4">
-    <div class="col-md-3 mb-2">
-      <div class="card shadow-sm p-3 bg-success text-white">
-        <h6>💰 الإيرادات</h6>
-        <h5>{{ total_payments }} درهم</h5>
-      </div>
-    </div>
-    <div class="col-md-3 mb-2">
-      <div class="card shadow-sm p-3 bg-warning text-dark">
-        <h6>🎉 دخل الأنشطة</h6>
-        <h5>{{ total_events_income }} درهم</h5>
-      </div>
-    </div>
-    <div class="col-md-3 mb-2">
-      <div class="card shadow-sm p-3 bg-danger text-white">
-        <h6>📉 المصاريف</h6>
-        <h5>{{ total_expenses }} درهم</h5>
-      </div>
-    </div>
-    <div class="col-md-3 mb-2">
-      <div class="card shadow-sm p-3 bg-info text-white">
-        <h6>🏠 الكراء</h6>
-        <h5>{{ rent_total }} درهم</h5>
-      </div>
-    </div>
-  </div>
-
-  <!-- صافي الربح -->
-  <div class="card shadow-sm p-3 mb-4 bg-primary text-white text-center">
-    <h5>📈 صافي الربح: {{ net_profit }} درهم</h5>
-  </div>
-
-  <!-- الجداول -->
-  <div class="row">
-    <div class="col-md-6">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h6>💵 قائمة الإيرادات</h6>
-          <table class="table table-sm">
-            <thead><tr><th>التاريخ</th><th>المبلغ</th></tr></thead>
-            <tbody>
-              {% for p in payments %}
-                <tr><td>{{ p.date }}</td><td>{{ p.amount }}</td></tr>
-              {% empty %}
-                <tr><td colspan="2">لا توجد بيانات</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h6>📉 قائمة المصاريف</h6>
-          <table class="table table-sm">
-            <thead><tr><th>التاريخ</th><th>المبلغ</th></tr></thead>
-            <tbody>
-              {% for e in expenses %}
-                <tr><td>{{ e.date }}</td><td>{{ e.amount }}</td></tr>
-              {% empty %}
-                <tr><td colspan="2">لا توجد بيانات</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- الأنشطة -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h6>🎉 تفاصيل الأنشطة</h6>
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th>النشاط</th>
-            <th>الدخل</th>
-            <th>المصاريف</th>
-            <th>الربح</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for e in events %}
-            <tr>
-              <td>{{ e.title }}</td>
-              <td>{{ e.income }}</td>
-              <td>{{ e.expense }}</td>
-              <td>{{ e.profit }}</td>
-            </tr>
-          {% empty %}
-            <tr><td colspan="4">لا توجد أنشطة</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
-{% endblock %}

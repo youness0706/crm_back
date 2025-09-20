@@ -1,0 +1,104 @@
+{% extends "./base/base.html" %}
+{% block content %}
+<div class="container mt-4" dir="rtl">
+
+  <h2 class="mb-4">🏠 الصفحة الرئيسية</h2>
+
+  <!-- البطاقات -->
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي الطلاب</h5>
+          <h2>{{ total_students }}</h2>
+          <small class="text-light">+{{ new_students }} هذا الأسبوع</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي الدخل</h5>
+          <h2>{{ total_income }} درهم</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>إجمالي المصاريف</h5>
+          <h2>{{ total_expenses }} درهم</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-dark shadow rounded-3 text-center">
+        <div class="card-body">
+          <h5>صافي الربح</h5>
+          <h2>{{ net_profit }} درهم</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow rounded-3">
+        <div class="card-header bg-info text-white">
+          <h5>روابط سريعة</h5>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'students' %}" class="btn btn-outline-primary me-2">👩‍🎓 قائمة الطلاب</a>
+          <a href="{% url 'payments' %}" class="btn btn-outline-success me-2">💰 قائمة المدفوعات</a>
+          <a href="{% url 'expenses' %}" class="btn btn-outline-danger me-2">📉 قائمة المصاريف</a>
+          <a href="{% url 'rawd_financials' %}" class="btn btn-outline-dark">📊 التحليلات المالية</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- الرسم البياني -->
+  <div class="card shadow mt-5">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">📊 مقارنة الدخل والمصاريف (آخر 6 أشهر)</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="financeChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById("financeChart").getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: {{ labels|safe }},
+      datasets: [
+        {
+          label: "الدخل",
+          data: {{ income_data|safe }},
+          borderColor: "#4caf50",
+          backgroundColor: "rgba(76,175,80,0.2)",
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: "المصاريف",
+          data: {{ expense_data|safe }},
+          borderColor: "#f44336",
+          backgroundColor: "rgba(244,67,54,0.2)",
+          tension: 0.3,
+          fill: true
+        }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+  });
+</script>
+{% endblock %}
