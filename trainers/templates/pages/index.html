@@ -7,6 +7,16 @@
 <!-- Previous content remains the same until charts section -->
 <div class="container-fluid  mt-3">
     <!-- Financial Overview Cards section remains unchanged -->
+     <H2>مرحبًا بكم في لوحة التحكم الرئيسية</H2>
+     <div class="row g-3">
+        
+        <div class="col-12 col-sm-12 col-md-8 col-lg-4">
+          <button class="btn btn-outline-secondary w-100 py-3 rounded-3 border-2 fw-bold" onclick="copyLink()">
+            <i class="fas fa-link d-block mb-2 fa-lg"></i>
+            نسخ رابط إضافة طالب
+          </button>
+        </div>
+     </div>
     
     <!-- Enhanced Charts Row -->
     <div class="row">
@@ -621,6 +631,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+function copyLink(){
+    const link = "{{ request.scheme }}://{{ request.get_host }}{% url 'addmegym' %}";
+    navigator.clipboard.writeText(link).then(() => {
+      // Enhanced notification
+      const toast = document.createElement('div');
+      toast.className = 'position-fixed top-0 start-50 translate-middle-x mt-4 alert alert-success alert-dismissible fade show shadow-lg rounded-4';
+      toast.style.zIndex = '9999';
+      toast.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        تم نسخ الرابط بنجاح!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      document.body.appendChild(toast);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 3000);
+    }).catch(() => {
+      alert("تم نسخ الرابط: " + link);
+    });
+  
+}
 </script>
 
 <!-- Charts.js Library -->
