@@ -1,56 +1,210 @@
 {% extends "./base/base.html" %}
-{% load static %}
 
-{% block title %}💰 قائمة المصاريف{% endblock %}
+{% block title %}قائمة المصاريف{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid py-4" dir="rtl">
 
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">💰 المصاريف</h4>
-    <a href="{% url 'add_expense' %}" class="btn btn-primary btn-sm">➕ إضافة مصروف</a>
+  <!-- Header Card -->
+  <div class="card border-0 shadow-lg mb-4" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+    <div class="card-body text-white py-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-2 fw-bold">
+            <i class="fas fa-chart-line-down me-3"></i>
+            قائمة المصاريف
+          </h1>
+          <p class="mb-0 opacity-75">إجمالي المصاريف: {{ total_expenses }} درهم</p>
+        </div>
+        <a href="{% url 'add_expense' %}" class="btn btn-light btn-lg">
+          <i class="fas fa-plus me-2"></i>
+          إضافة مصروف جديد
+        </a>
+      </div>
+    </div>
   </div>
 
-  <!-- Summary -->
-  <div class="alert alert-info text-center fw-bold">
-  مجموع العمليات: {{ expenses|length }} |
-  المجموع الكلي: {{ total_amount }} درهم
-</div>
-
-  <!-- Expenses List (Cards instead of Table) -->
-  <div class="row g-3">
-    {% for exp in expenses %}
-    <div class="col-12">
-      <div class="card shadow-sm border-start border-4 border-primary">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <div>
-              <h6 class="mb-1 text-primary">{{ exp.title }}</h6>
-              <p class="mb-1 small text-muted">📅 {{ exp.date|date:"Y-m-d" }}</p>
-              {% if exp.description %}
-                <p class="mb-1 small">{{ exp.description }}</p>
-              {% endif %}
-            </div>
-            <div class="text-end">
-              <span class="badge bg-success fs-6">{{ exp.amount }} درهم</span>
-              <div>
-              <a href="{% url 'expense_delete' exp.id %}" class="btn btn-sm btn-danger">🗑️</a>
-            </div>
-            </div>
-            
-          </div>
+  <!-- Summary Cards -->
+  
+  
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
+        <div class="card-body text-white text-center p-3">
+          <i class="fas fa-users fa-2x mb-2"></i>
+          <h6 class="mb-1">الرواتب</h6>
+          <h4 class="mb-0 fw-bold">{{ salary_expenses }} درهم</h4>
         </div>
       </div>
     </div>
-    {% empty %}
-    <div class="col-12">
-      <div class="alert alert-warning text-center">
-        🚫 لا توجد مصاريف مسجلة حالياً.
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #581c87 0%, #8b5cf6 100%);">
+        <div class="card-body text-white text-center p-3">
+          <i class="fas fa-cogs fa-2x mb-2"></i>
+          <h6 class="mb-1">أخرى</h6>
+          <h4 class="mb-0 fw-bold">{{ other_expenses }} درهم</h4>
+        </div>
       </div>
     </div>
-    {% endfor %}
   </div>
 
+
+  <!-- Expenses Table -->
+  <div class="card border-0 shadow-lg">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th class="px-4 py-3">#</th>
+              <th class="px-4 py-3">التاريخ</th>
+              <th class="px-4 py-3">الفئة</th>
+              <th class="px-4 py-3">الوصف</th>
+              <th class="px-4 py-3">المبلغ</th>
+              <th class="px-4 py-3">المدفوع لـ</th>
+              <th class="px-4 py-3">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+            <tr>
+              <td class="px-4 py-3">
+                <span class="fw-bold text-muted">{{ forloop.counter }}</span>
+              </td>
+              <td class="px-4 py-3">
+                <span class="text-nowrap">{{ expense.date }}</span>
+              </td>
+              <td class="px-4 py-3">
+                {% if expense.category == "rent" %}
+                  <span class="badge bg-danger rounded-pill">إيجار</span>
+                {% elif expense.category == "salary" %}
+                  <span class="badge bg-primary rounded-pill">راتب</span>
+                {% elif expense.category == "utilities" %}
+                  <span class="badge bg-warning rounded-pill">مرافق</span>
+                {% elif expense.category == "supplies" %}
+                  <span class="badge bg-info rounded-pill">مستلزمات</span>
+                {% elif expense.category == "maintenance" %}
+                  <span class="badge bg-secondary rounded-pill">صيانة</span>
+                {% else %}
+                  <span class="badge bg-dark rounded-pill">أخرى</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3">
+                <div class="d-flex align-items-center">
+                  {% if expense.category == "rent" %}
+                    <i class="fas fa-home text-danger me-2"></i>
+                  {% elif expense.category == "salary" %}
+                    <i class="fas fa-user-tie text-primary me-2"></i>
+                  {% elif expense.category == "utilities" %}
+                    <i class="fas fa-bolt text-warning me-2"></i>
+                  {% elif expense.category == "supplies" %}
+                    <i class="fas fa-box text-info me-2"></i>
+                  {% elif expense.category == "maintenance" %}
+                    <i class="fas fa-tools text-secondary me-2"></i>
+                  {% else %}
+                    <i class="fas fa-receipt text-dark me-2"></i>
+                  {% endif %}
+                  <span>{{ expense.description|truncatechars:50 }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3">
+                <span class="fw-bold text-danger">{{ expense.amount }} درهم</span>
+              </td>
+              <td class="px-4 py-3">
+                <span class="text-muted">{{ expense.paid_to|default:"-" }}</span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="btn-group" role="group">
+                  <a href="{% url 'edit_expense' expense.id %}" 
+                     class="btn btn-outline-primary btn-sm" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="{% url 'remove_expense' expense.id %}" 
+                     class="btn btn-outline-danger btn-sm" 
+                     onclick="return confirm('هل أنت متأكد من حذف هذا المصروف؟')"
+                     title="حذف">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="fas fa-receipt fa-3x mb-3"></i>
+                  <h5>لا يوجد مصاريف</h5>
+                  <p>لم يتم العثور على أي مصاريف بالمعايير المحددة</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if expenses.has_other_pages %}
+  <div class="d-flex justify-content-center mt-4">
+    <nav aria-label="صفحات المصاريف">
+      <ul class="pagination">
+        {% if expenses.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ expenses.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+              السابق
+            </a>
+          </li>
+        {% endif %}
+
+        {% for num in expenses.paginator.page_range %}
+          {% if expenses.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                {{ num }}
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if expenses.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ expenses.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+              التالي
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+
 </div>
+
+<!-- Custom CSS -->
+<style>
+  .table-responsive {
+    border-radius: 0.5rem;
+  }
+  
+  .table tr:hover {
+    background-color: rgba(0,0,0,0.02);
+  }
+  
+  @media (max-width: 768px) {
+    .table th,
+    .table td {
+      padding: 0.75rem 0.5rem !important;
+      font-size: 0.9rem;
+    }
+    
+    .btn-group .btn {
+      padding: 0.25rem 0.5rem;
+    }
+  }
+</style>
 {% endblock %}

@@ -1,15 +1,17 @@
+
 {% load static %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
   <div class="container-fluid">
     <!-- Logo -->
-    <a class="navbar-brand fw-bold" href="{% url 'rawd_home' %}">
-      <i class="bi bi-book-half"></i>
-      النظام المدرسي
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'rawd_home' %}">
+      <i class="fas fa-graduation-cap me-2"></i>
+      <span>النظام المدرسي</span>
     </a>
+    
     {% if user.is_authenticated %}
     <!-- Mobile toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
       aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -20,66 +22,79 @@
         {% if user.staff.role == 'admin' %}
         <!-- الرئيسية -->
         <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'rawd_home' %}active{% endif %}" href="{% url 'rawd_home' %}">
-            🏠 الرئيسية
+          <a class="nav-link {% if request.resolver_match.url_name == 'rawd_home' %}active bg-white bg-opacity-20 rounded text-dark{% endif %}" href="{% url 'rawd_home' %}">
+            <i class="fas fa-home me-2"></i> الرئيسية
           </a>
         </li>
         {% endif %}
 
         <!-- الطلاب -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="studentsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            👨‍🎓 الطلاب
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="studentsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-graduate me-2"></i> الطلاب
           </a>
-          <ul class="dropdown-menu" aria-labelledby="studentsMenu">
-            
-            <li><a class="dropdown-item" href="{% url 'students' %}">📋 قائمة الطلاب</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_student' %}">➕ إضافة طالب</a></li>
+          <ul class="dropdown-menu shadow-lg border-0 rounded-3">
+            <li><a class="dropdown-item py-2" href="{% url 'students' %}">
+              <i class="fas fa-list me-2 text-primary"></i> قائمة الطلاب
+            </a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'add_student' %}">
+              <i class="fas fa-plus me-2 text-success"></i> إضافة طالب
+            </a></li>
           </ul>
         </li>
 
         <!-- الأنشطة -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="eventsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            🎉 الأنشطة
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="eventsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-calendar-alt me-2"></i> الأنشطة
           </a>
-          <ul class="dropdown-menu" aria-labelledby="eventsMenu">
-            <li><a class="dropdown-item" href="{% url 'events_list' %}">📋 قائمة الأنشطة</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_event' %}">➕ إضافة نشاط</a></li>
+          <ul class="dropdown-menu shadow-lg border-0 rounded-3">
+            <li><a class="dropdown-item py-2" href="{% url 'events_list' %}">
+              <i class="fas fa-list me-2 text-primary"></i> قائمة الأنشطة
+            </a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'add_event' %}">
+              <i class="fas fa-plus me-2 text-success"></i> إضافة نشاط
+            </a></li>
           </ul>
         </li>
 
         <!-- الدفعات -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="paymentsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            💵 الدفعات
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="paymentsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-money-bill-wave me-2"></i> الدفعات
           </a>
-          <ul class="dropdown-menu" aria-labelledby="paymentsMenu">
+          <ul class="dropdown-menu shadow-lg border-0 rounded-3">
             {% if user.staff.role == 'admin' %}
-            <li><a class="dropdown-item" href="{% url 'payments' %}">📋 جميع الدفعات</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'payments' %}">
+              <i class="fas fa-list me-2 text-primary"></i> جميع الدفعات
+            </a></li>
             {% endif %}
-            <li><a class="dropdown-item" href="{% url 'add_payment' %}">➕ إضافة دفعة</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'add_payment' %}">
+              <i class="fas fa-plus me-2 text-success"></i> إضافة دفعة
+            </a></li>
           </ul>
         </li>
-        {% endif %}
 
         <!-- المصاريف -->
-         {% if user.staff.role == 'admin' %}
+        {% if user.staff.role == 'admin' %}
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="expensesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            📉 المصاريف
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="expensesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-receipt me-2"></i> المصاريف
           </a>
-          <ul class="dropdown-menu" aria-labelledby="expensesMenu">
-            <li><a class="dropdown-item" href="{% url 'expenses' %}">📋 قائمة المصاريف</a></li>
-            <li><a class="dropdown-item" href="{% url 'add_expense' %}">➕ إضافة مصروف</a></li>
+          <ul class="dropdown-menu shadow-lg border-0 rounded-3">
+            <li><a class="dropdown-item py-2" href="{% url 'expenses' %}">
+              <i class="fas fa-list me-2 text-primary"></i> قائمة المصاريف
+            </a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'add_expense' %}">
+              <i class="fas fa-plus me-2 text-success"></i> إضافة مصروف
+            </a></li>
           </ul>
         </li>
-        
 
         <!-- المالية -->
         <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'rawd_financials' %}active{% endif %}" href="{% url 'rawd_financials' %}">
-            📊 المالية
+          <a class="nav-link {% if request.resolver_match.url_name == 'rawd_financials' %}active text-dark bg-white bg-opacity-20 rounded{% endif %}" href="{% url 'rawd_financials' %}">
+            <i class="fas fa-chart-bar me-2"></i> المالية
           </a>
         </li>
         {% endif %}
@@ -89,30 +104,41 @@
       <ul class="navbar-nav ms-auto">
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              👤 {{ user.username }}
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-2"></i> {{ user.username }}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3">
               {% if user.staff.role == 'admin' %}
-              <li><a class="dropdown-item" href="{% url 'rawd_info' %}">⚙️ الإعدادات</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'rawd_info' %}">
+                <i class="fas fa-cog me-2 text-secondary"></i> الإعدادات
+              </a></li>
               {% endif %}
-              <li><a class="dropdown-item text-danger" href="{% url 'rawd_logout' %}">🚪 تسجيل الخروج</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 text-danger" href="{% url 'rawd_logout' %}">
+                <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
+              </a></li>
             </ul>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="{% url 'rawd_login' %}">🔑 تسجيل الدخول</a>
+            <a class="nav-link text-white fw-bold d-flex align-items-center" href="{% url 'rawd_login' %}">
+              <i class="fas fa-key me-2"></i> تسجيل الدخول
+            </a>
           </li>
         {% endif %}
       </ul>
     </div>
+    {% endif %}
   </div>
 </nav>
-<div class="messages">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
+
+<!-- Messages with better mobile display -->
+<div class="container-fluid px-3 py-2">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+      <i class="fas fa-info-circle me-2"></i>
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
 </div>

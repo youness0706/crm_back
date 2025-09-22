@@ -3,104 +3,229 @@
 {% block title %}قائمة الطلاب{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-3">
-  <div class="card shadow-sm rounded-3">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">📋 قائمة الطلاب</h5>
-      <a href="{% url 'add_student' %}" class="btn btn-light btn-sm">➕ إضافة طالب</a>
-    </div>
-    <div class="card-body">
-
-      <!-- Filters -->
-      <form method="get" class="row g-2 mb-3">
-        <div class="col-12">
-          <input type="text" name="fname" class="form-control" placeholder="🔍 بحث بالاسم" value="{{ request.GET.fname }}">
+<div class="container-fluid py-4" dir="rtl">
+  
+  <!-- Header Card -->
+  <div class="card border-0 shadow-lg mb-4" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+    <div class="card-body text-white py-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-2 fw-bold">
+            <i class="fas fa-user-graduate me-3"></i>
+            قائمة الطلاب
+          </h1>
+          <p class="mb-0 opacity-75">إجمالي الطلاب: {{ students.count }}</p>
         </div>
-        <div class="col-6 col-md-3">
-          <select name="grade" class="form-select">
-            <option value="all">كل الصفوف</option>
+        <a href="{% url 'add_student' %}" class="btn btn-light btn-lg">
+          <i class="fas fa-plus me-2"></i>
+          إضافة طالب جديد
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters Card -->
+  <div class="card border-0 shadow-lg mb-4">
+    <div class="card-body p-4">
+      <form method="get" class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-0">
+              <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" name="search" class="form-control border-0 bg-light" 
+                   placeholder="البحث بالاسم..." value="{{ request.GET.search }}">
+          </div>
+        </div>
+        <div class="col-12 col-md-2">
+          <select name="grade" class="form-select bg-light border-0">
+            <option value="">جميع الصفوف</option>
             <option value="1" {% if request.GET.grade == "1" %}selected{% endif %}>صف الصغار</option>
             <option value="2" {% if request.GET.grade == "2" %}selected{% endif %}>الصف المتوسط</option>
             <option value="3" {% if request.GET.grade == "3" %}selected{% endif %}>صف الكبار</option>
           </select>
         </div>
-        <div class="col-6 col-md-3">
-          <select name="gender" class="form-select">
-            <option value="all">الجنس</option>
+        <div class="col-12 col-md-2">
+          <select name="gender" class="form-select bg-light border-0">
+            <option value="">جميع الأجناس</option>
             <option value="male" {% if request.GET.gender == "male" %}selected{% endif %}>ذكر</option>
             <option value="female" {% if request.GET.gender == "female" %}selected{% endif %}>أنثى</option>
           </select>
         </div>
-        <div class="col-6 col-md-3">
-          <select name="active" class="form-select">
-            <option value="all">الحالة</option>
-            <option value="1" {% if request.GET.active == "1" %}selected{% endif %}>نشط</option>
-            <option value="0" {% if request.GET.active == "0" %}selected{% endif %}>غير نشط</option>
-          </select>
+        <div class="col-12 col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fas fa-filter me-2"></i>
+            تطبيق
+          </button>
         </div>
-        <div class="col-6 col-md-3 d-grid">
-          <button type="submit" class="btn btn-success">بحث</button>
+        <div class="col-12 col-md-2">
+          <a href="{% url 'students' %}" class="btn btn-outline-secondary w-100">
+            <i class="fas fa-times me-2"></i>
+            إلغاء
+          </a>
         </div>
       </form>
-
-      <!-- Students Table -->
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>#</th>
-              <th>الاسم</th>
-              <th>الجنس</th>
-              <th>الميلاد</th>
-              <th>الصف</th>
-              <th>ولي الأمر</th>
-              <th>الهاتف</th>
-              <th>التسجيل</th>
-              <th>الحالة</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for student in students %}
-            <tr>
-              <td>{{ forloop.counter }}</td>
-              <td class="text-nowrap"><a href="{% url 'rawd_student_profile' student.id %}">{{ student.fname }} {{ student.lname }}</a></td>
-              <td>
-                {% if student.is_male %} 👦 ذكر {% else %} 👧 أنثى {% endif %}
-              </td>
-              <td>{{ student.date_of_birth }}</td>
-              <td>
-                {% if student.grade == "1" %} صغار {% endif %}
-                {% if student.grade == "2" %} متوسط {% endif %}
-                {% if student.grade == "3" %} كبار {% endif %}
-              </td>
-              <td>{{ student.parent_name }}</td>
-              <td>{{ student.parent_phone }}</td>
-              <td>{{ student.enrollment_date }}</td>
-              <td>
-                {% if student.is_active %}
-                  <span class="badge bg-success">نشط</span>
-                {% else %}
-                  <span class="badge bg-danger">غير نشط</span>
-                {% endif %}
-              </td>
-              <td>
-                <div class="d-flex flex-column flex-md-row gap-1">
-                  <a href="{% url 'edit_student' student.id %}" class="btn btn-warning btn-sm w-100">✏️ تعديل</a>
-                  <a href="{% url 'remove_student' student.id %}" class="btn btn-danger btn-sm w-100">🗑️ حذف</a>
-                </div>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="9" class="text-center text-muted">لا يوجد طلاب</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
     </div>
   </div>
+
+  <!-- Students Grid -->
+  <div class="row g-4">
+    {% for student in students %}
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="card border-0 shadow-lg h-100 student-card">
+        <div class="card-body p-4 text-center">
+          <!-- Student Photo -->
+          <div class="mb-3">
+            {% if student.upload %}
+              <img src="{{ student.upload.url }}" alt="{{ student.fname }}" 
+                   class="rounded-circle border border-3 border-primary" 
+                   style="width: 80px; height: 80px; object-fit: cover;">
+            {% else %}
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto"
+                   style="width: 80px; height: 80px;">
+                <i class="fas fa-user fa-2x"></i>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Student Info -->
+          <h5 class="fw-bold mb-2">{{ student.fname }} {{ student.lname }}</h5>
+          
+          <div class="mb-3">
+            <!-- Grade Badge -->
+            <span class="badge bg-primary rounded-pill me-2">
+              {% if student.grade == "1" %}صف الصغار
+              {% elif student.grade == "2" %}الصف المتوسط
+              {% elif student.grade == "3" %}صف الكبار
+              {% endif %}
+            </span>
+            
+            <!-- Gender Badge -->
+            <span class="badge {% if student.gender == 'male' %}bg-info{% else %}bg-pink{% endif %} rounded-pill">
+              {% if student.gender == 'male' %}ذكر{% else %}أنثى{% endif %}
+            </span>
+          </div>
+
+          <!-- Student Details -->
+          <div class="text-muted small mb-3">
+            {% if student.date_of_birth %}
+            <p class="mb-1">
+              <i class="fas fa-birthday-cake me-2"></i>
+              {{ student.date_of_birth }}
+            </p>
+            {% endif %}
+            
+            {% if student.parent_name %}
+            <p class="mb-1">
+              <i class="fas fa-user-tie me-2"></i>
+              {{ student.parent_name }}
+            </p>
+            {% endif %}
+            
+            {% if student.parent_phone %}
+            <p class="mb-1">
+              <i class="fas fa-phone me-2"></i>
+              {{ student.parent_phone }}
+            </p>
+            {% endif %}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2">
+            <a href="{% url 'rawd_student_profile' student.id %}" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-eye me-2"></i>
+              عرض التفاصيل
+            </a>
+            <div class="btn-group" role="group">
+              <a href="{% url 'edit_student' student.id %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'remove_student' student.id %}" class="btn btn-outline-danger btn-sm"
+                 onclick="return confirm('هل أنت متأكد من حذف {{ student.fname }} {{ student.lname }}؟')">
+                <i class="fas fa-trash"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">لا يوجد طلاب</h5>
+          <p class="text-muted">لم يتم العثور على أي طلاب بالمعايير المحددة</p>
+          <a href="{% url 'add_student' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
+            إضافة أول طالب
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if students.has_other_pages %}
+  <div class="d-flex justify-content-center mt-4">
+    <nav aria-label="صفحات الطلاب">
+      <ul class="pagination">
+        {% if students.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ students.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.grade %}&grade={{ request.GET.grade }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}">
+              السابق
+            </a>
+          </li>
+        {% endif %}
+
+        {% for num in students.paginator.page_range %}
+          {% if students.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.grade %}&grade={{ request.GET.grade }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}">
+                {{ num }}
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if students.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ students.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.grade %}&grade={{ request.GET.grade }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}">
+              التالي
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+
 </div>
+
+<!-- Custom CSS -->
+<style>
+  .student-card {
+    transition: all 0.3s ease;
+  }
+  
+  .student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+  }
+  
+  .bg-pink {
+    background-color: #ec4899 !important;
+  }
+  
+  @media (max-width: 768px) {
+    .card-body {
+      padding: 1.5rem !important;
+    }
+  }
+</style>
 {% endblock %}

@@ -1,80 +1,181 @@
+
 {% extends "./base/base.html" %}
 
 {% block title %}إضافة طالب{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
       
-      <div class="card shadow-lg border-0 rounded-3">
-        <div class="card-header bg-primary text-white text-center">
-          <h4>➕ إضافة طالب جديد</h4>
+      <!-- Header Card -->
+      <div class="card border-0 shadow-lg mb-4" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+        <div class="card-body text-white text-center py-4">
+          <h1 class="mb-2">
+            <i class="fas fa-user-plus me-3"></i>
+            إضافة طالب جديد
+          </h1>
+          <p class="mb-0 opacity-75">املأ البيانات التالية لإضافة طالب جديد للنظام</p>
         </div>
+      </div>
 
+      <!-- Form Card -->
+      <div class="card border-0 shadow-lg">
         <div class="card-body p-4">
 
           {% if error %}
-            <div class="alert alert-danger text-center">{{ error }}</div>
+            <div class="alert alert-danger d-flex align-items-center">
+              <i class="fas fa-exclamation-triangle me-3"></i>
+              <div>{{ error }}</div>
+            </div>
           {% endif %}
 
-          <form method="post" enctype="multipart/form-data">
+          <form method="post" enctype="multipart/form-data" id="studentForm">
             {% csrf_token %}
 
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label">الاسم الشخصي</label>
-                <input type="text" name="first_name" class="form-control" required>
+            <!-- Personal Information Section -->
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-user me-2"></i>
+                المعلومات الشخصية
+              </h5>
+              
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-id-card me-2 text-muted"></i>
+                    الاسم الشخصي
+                  </label>
+                  <input type="text" name="first_name" class="form-control form-control-lg" placeholder="أدخل الاسم الشخصي" required>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-id-card me-2 text-muted"></i>
+                    اسم العائلة
+                  </label>
+                  <input type="text" name="last_name" class="form-control form-control-lg" placeholder="أدخل اسم العائلة" required>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label">اسم العائلة</label>
-                <input type="text" name="last_name" class="form-control" required>
+            </div>
+
+            <!-- Basic Details Section -->
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-info-circle me-2"></i>
+                التفاصيل الأساسية
+              </h5>
+              
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-venus-mars me-2 text-muted"></i>
+                    الجنس
+                  </label>
+                  <select name="gender" class="form-select form-select-lg" required>
+                    <option value="">اختر الجنس</option>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-calendar me-2 text-muted"></i>
+                    تاريخ الميلاد
+                  </label>
+                  <input type="date" name="date_of_birth" class="form-control form-control-lg">
+                </div>
               </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">الجنس</label>
-              <select name="gender" class="form-select" required>
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-              </select>
+            <!-- Academic Information Section -->
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-graduation-cap me-2"></i>
+                المعلومات الأكاديمية
+              </h5>
+              
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-layer-group me-2 text-muted"></i>
+                    المستوى / الصف
+                  </label>
+                  <select name="grade" class="form-select form-select-lg" required>
+                    <option value="">اختر المستوى</option>
+                    <option value="1">صف الصغار</option>
+                    <option value="2">الصف المتوسط</option>
+                    <option value="3">صف الكبار</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-calendar-plus me-2 text-muted"></i>
+                    تاريخ التسجيل
+                  </label>
+                  <input type="date" name="enrollment_date" class="form-control form-control-lg">
+                </div>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">تاريخ الميلاد</label>
-              <input type="date" name="date_of_birth" class="form-control">
+            <!-- Parent Information Section -->
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-users me-2"></i>
+                معلومات ولي الأمر
+              </h5>
+              
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-user-tie me-2 text-muted"></i>
+                    اسم ولي الأمر
+                  </label>
+                  <input type="text" name="parent_name" class="form-control form-control-lg" placeholder="أدخل اسم ولي الأمر">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">
+                    <i class="fas fa-phone me-2 text-muted"></i>
+                    هاتف ولي الأمر
+                  </label>
+                  <input type="tel" name="parent_phone" class="form-control form-control-lg" placeholder="05xxxxxxxx">
+                </div>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">المستوى / الصف</label>
-              <select name="grade" class="form-select" required>
-                <option value="1">صف الصغار</option>
-                <option value="2">الصف المتوسط</option>
-                <option value="3">صف الكبار</option>
-              </select>
+            <!-- Photo Upload Section -->
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-camera me-2"></i>
+                الصورة الشخصية
+              </h5>
+              
+              <div class="col-12">
+                <label class="form-label">
+                  <i class="fas fa-upload me-2 text-muted"></i>
+                  ارفع صورة الطالب
+                </label>
+                <input type="file" name="upload" accept="image/*" class="form-control form-control-lg">
+                <div class="form-text">
+                  <i class="fas fa-info-circle me-1"></i>
+                  يفضل أن تكون الصورة واضحة وبجودة عالية
+                </div>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">اسم ولي الأمر</label>
-              <input type="text" name="parent_name" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">هاتف ولي الأمر</label>
-              <input type="text" name="parent_phone" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">تاريخ التسجيل</label>
-              <input type="date" name="enrollment_date" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="upload">ارفع صورة</label>
-                <input type="file" id="upload" name="upload" accept="image/*" class="form-control">
-            </div>
-            <div class="d-flex justify-content-between">
-              <button type="submit" class="btn btn-success px-4">💾 حفظ</button>
-              <a href="{% url 'students' %}" class="btn btn-secondary px-4">⬅️ رجوع</a>
+            <!-- Action Buttons -->
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                  <i class="fas fa-save me-2"></i>
+                  حفظ البيانات
+                </button>
+              </div>
+              <div class="col-12 col-md-6">
+                <a href="{% url 'students' %}" class="btn btn-secondary btn-lg w-100">
+                  <i class="fas fa-arrow-right me-2"></i>
+                  رجوع للقائمة
+                </a>
+              </div>
             </div>
 
           </form>
@@ -84,4 +185,36 @@
     </div>
   </div>
 </div>
+
+<script>
+// Form validation and UX improvements
+document.getElementById('studentForm').addEventListener('submit', function(e) {
+  const requiredFields = this.querySelectorAll('[required]');
+  let hasErrors = false;
+  
+  requiredFields.forEach(field => {
+    if (!field.value.trim()) {
+      field.classList.add('is-invalid');
+      hasErrors = true;
+    } else {
+      field.classList.remove('is-invalid');
+    }
+  });
+  
+  if (hasErrors) {
+    e.preventDefault();
+    alert('يرجى ملء جميع الحقول المطلوبة');
+  }
+});
+
+// Real-time validation
+document.querySelectorAll('[required]').forEach(field => {
+  field.addEventListener('blur', function() {
+    if (this.value.trim()) {
+      this.classList.remove('is-invalid');
+      this.classList.add('is-valid');
+    }
+  });
+});
+</script>
 {% endblock %}

@@ -2,14 +2,182 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}لوحة التحكم{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary-color: #4f46e5;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --dark-color: #1f2937;
+    }
+
     body {
       font-family: "Cairo", sans-serif;
+      font-size: 16px; /* Base font size for better mobile readability */
+      line-height: 1.6;
+      background-color: #f8fafc;
     }
-    .offcanvas {
-      width: 250px !important;
+
+    /* Mobile-first typography */
+    h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.9rem; font-weight: 600; margin-bottom: 1.25rem; }
+    h3 { font-size: 1.6rem; font-weight: 600; margin-bottom: 1rem; }
+    h4 { font-size: 1.4rem; font-weight: 600; margin-bottom: 1rem; }
+    h5 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; }
+
+    /* Enhanced form controls for mobile */
+    .form-control, .form-select {
+      font-size: 16px !important; /* Prevents zoom on iOS */
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Mobile-optimized buttons */
+    .btn {
+      font-size: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s ease;
+      min-height: 48px; /* Better touch targets */
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Card enhancements */
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      border-radius: 1rem 1rem 0 0 !important;
+      padding: 1.25rem 1.5rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Mobile container adjustments */
+    @media (max-width: 768px) {
+      .container, .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+      
+      .card-body {
+        padding: 1rem;
+      }
+      
+      .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      
+      .row .col-12:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+
+    /* Navbar improvements */
+    .navbar {
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      font-size: 1rem;
+      padding: 0.5rem 1rem !important;
+    }
+
+    /* Alert improvements */
+    .alert {
+      border-radius: 0.75rem;
+      border: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Select2 mobile optimization */
+    .select2-container .select2-selection--single,
+    .select2-container .select2-selection--multiple {
+      min-height: 48px;
+      border-radius: 0.5rem;
+      border: 2px solid #e5e7eb;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      padding-top: 0.75rem;
+      font-size: 16px;
+    }
+
+    /* Loading states */
+    .btn.loading {
+      position: relative;
+      color: transparent;
+    }
+
+    .btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: #ffffff;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Success animations */
+    .success-animation {
+      animation: successPulse 0.6s ease-in-out;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
@@ -17,14 +185,51 @@
 {% if 'addme' not in request.path %}
   {% include './sidebar.html' %}
 {% endif %}
+
   <!-- Main Content -->
-  <main class="container-fluid mt-4">
+  <main class="container-fluid py-3">
     {% block content %}
-    <h2>مرحباً بك 👋</h2>
-    <p>اضغط على زر القائمة العلوي لعرض أقسام الجيم أو المدرسة.</p>
+    <div class="text-center py-5">
+      <h2>مرحباً بك 👋</h2>
+      <p class="lead">اضغط على زر القائمة لعرض أقسام النظام.</p>
+    </div>
     {% endblock %}
   </main>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Global JavaScript enhancements -->
+  <script>
+    // Form submission loading states
+    document.querySelectorAll('form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.classList.add('loading');
+          submitBtn.disabled = true;
+        }
+      });
+    });
+
+    // Auto-hide alerts after 5 seconds
+    document.querySelectorAll('.alert').forEach(alert => {
+      if (!alert.querySelector('.btn-close')) {
+        setTimeout(() => {
+          alert.style.animation = 'fadeOut 0.5s ease-in-out';
+          setTimeout(() => alert.remove(), 500);
+        }, 5000);
+      }
+    });
+
+    // Add fadeOut animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 </body> 
 </html>
