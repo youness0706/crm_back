@@ -368,9 +368,12 @@ def added_payment(request):
     if request.user.is_authenticated:
         return render(request,"pages/added_payment.html")
 
+@login_required(login_url='/login/')
 def payments_history(request):
     if request.user.is_authenticated:
-        context = {'payments':Payments.objects.all().order_by('-id')}
+        #Get first 50 payments
+        payments = Payments.objects.all().order_by('-id')[:30]
+        context = {'payments':payments}
         return render(request,"pages/payments_history.html",context)
 
 @login_required(login_url='/login/')
