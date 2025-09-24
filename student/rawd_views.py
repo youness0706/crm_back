@@ -292,7 +292,7 @@ def rawd_student_profile(request, pk):
     else:
         form = StudentPaymentForm()
     
-    return render(request, 'rawd_pages/stuedentprofile.html', {
+    return render(request, 'rawd_pages/StuedentProfile.html', {
         'student': student,
         'payments': payments,
         'form': form
@@ -329,7 +329,7 @@ def add_expense(request):
             description=description
         ).save()
 
-        return redirect("expenses")  # صفحة عرض جميع المصاريف
+        return redirect("rawd_expenses")  # صفحة عرض جميع المصاريف
 
     return render(request, "rawd_pages/addexpense.html")
 
@@ -357,7 +357,7 @@ def rawd_expense_delete(request, expense_id):
         messages.success(request, "تمت إزالة المصروف بنجاح.")
     else:
         messages.error(request, "المصروف غير موجود.")
-    return redirect('expenses')
+    return redirect('rawd_expenses')
 
 
 def events_list(request):

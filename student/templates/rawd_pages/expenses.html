@@ -16,7 +16,7 @@
           </h1>
           <p class="mb-0 opacity-75">إجمالي المصاريف: {{ total_expenses }} درهم</p>
         </div>
-        <a href="{% url 'add_expense' %}" class="btn btn-light btn-lg">
+        <a href="{% url 'add_rawd_expense' %}" class="btn btn-light btn-lg">
           <i class="fas fa-plus me-2"></i>
           إضافة مصروف جديد
         </a>
@@ -24,28 +24,7 @@
     </div>
   </div>
 
-  <!-- Summary Cards -->
-  
-  
-    <div class="col-12 col-md-3">
-      <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
-        <div class="card-body text-white text-center p-3">
-          <i class="fas fa-users fa-2x mb-2"></i>
-          <h6 class="mb-1">الرواتب</h6>
-          <h4 class="mb-0 fw-bold">{{ salary_expenses }} درهم</h4>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3">
-      <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #581c87 0%, #8b5cf6 100%);">
-        <div class="card-body text-white text-center p-3">
-          <i class="fas fa-cogs fa-2x mb-2"></i>
-          <h6 class="mb-1">أخرى</h6>
-          <h4 class="mb-0 fw-bold">{{ other_expenses }} درهم</h4>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
 
   <!-- Expenses Table -->
@@ -114,11 +93,8 @@
               </td>
               <td class="px-4 py-3">
                 <div class="btn-group" role="group">
-                  <a href="{% url 'edit_expense' expense.id %}" 
-                     class="btn btn-outline-primary btn-sm" title="تعديل">
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a href="{% url 'remove_expense' expense.id %}" 
+                  
+                  <a href="{% url 'expense_delete' expense.id %}" 
                      class="btn btn-outline-danger btn-sm" 
                      onclick="return confirm('هل أنت متأكد من حذف هذا المصروف؟')"
                      title="حذف">

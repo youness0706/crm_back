@@ -1609,11 +1609,11 @@ def unpaid_trainees(request):
             last_payment_dates = {}
             for trainee in unpaid_trainees:
                 last_payment = Payments.objects.filter(trainer=trainee, paymentCategry='month').order_by('-paymentdate').first()
-                last_payment_dates[trainee.refrnumber] = last_payment.paymentdate if last_payment else None
+                last_payment_dates[trainee] = last_payment.paymentdate if last_payment else None
 
             # Attach last payment date to each trainee
             for trainee in unpaid_trainees:
-                trainee.last_payment_date = last_payment_dates.get(trainee.refrnumber, None)
+                trainee.last_payment_date = last_payment_dates.get(trainee, None)
 
             return render(request, 'pages/unpaid_trainees.html', {
                 'unpaid_trainees': unpaid_trainees,

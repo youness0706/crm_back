@@ -67,8 +67,8 @@
               <td>{{ payment.date }}</td>
               <td>{{ payment.description|default:"-" }}</td>
               <td>
-                <a href="{% url 'remove_payment' payment.id %}" class="btn btn-sm btn-outline-danger">حذف</a>
-                <a href="{% url 'edit_payment' payment.id %}" class="btn btn-sm btn-outline-primary">تعديل</a>
+                <a href="{% url 'remove_rawd_payment' payment.id %}" class="btn btn-sm btn-outline-danger">حذف</a>
+                <a href="{% url 'edit_rawd_payment' payment.id %}" class="btn btn-sm btn-outline-primary">تعديل</a>
               </td>
             </tr>
             {% empty %}
