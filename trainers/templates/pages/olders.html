@@ -123,11 +123,10 @@
         // قم بتصفية القائمة
         trainers.forEach(trainer => {
             // احصل على اسم المتدرب
-            let refrnumber = trainer.querySelector(".refr").textContent.toLowerCase();
             let name = trainer.querySelector(".primary-link").textContent.toLowerCase();
 
             // تحقق مما إذا كان الاسم يتطابق مع النص المدخل
-            if (name.includes(query) || refrnumber.includes(query)) {
+            if (name.includes(query)) {
                 trainer.style.display = ""; // أظهر العنصر
             } else {
                 trainer.style.display = "none"; // أخف العنصر
