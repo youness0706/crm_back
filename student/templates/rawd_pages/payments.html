@@ -33,9 +33,28 @@
                  value="{{ request.GET.date_to }}">
         </div>
         <div class="col-6 col-md-2 d-grid">
-          <button type="submit" class="btn btn-success">بحث</button>
+          <button type="submit" class="btn btn-success">🔍 بحث</button>
         </div>
       </form>
+
+      <!-- Download Buttons -->
+      <div class="row g-2 mb-3">
+        <div class="col-12">
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-success" id="downloadCsvBtn">
+              📥 تحميل CSV
+            </button>
+            <button type="button" class="btn btn-outline-danger" id="downloadPdfBtn">
+              📄 تحميل PDF
+            </button>
+            {% if payments %}
+            <span class="badge bg-info align-self-center">
+              إجمالي: {{ total_amount }} درهم
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
 
       <!-- Payments Table -->
       <div class="table-responsive">
@@ -73,7 +92,7 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="6" class="text-center text-muted">لا يوجد دفعات</td>
+              <td colspan="7" class="text-center text-muted">لا يوجد دفعات</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -83,4 +102,23 @@
     </div>
   </div>
 </div>
+
+<script>
+document.getElementById('downloadCsvBtn').addEventListener('click', function() {
+  const params = new URLSearchParams(window.location.search);
+  window.location.href = `/rawd/payments/download-csv/?${params.toString()}`;
+});
+
+document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+  const params = new URLSearchParams(window.location.search);
+  window.location.href = `/rawd/payments/download-pdf/?${params.toString()}`;
+});
+</script>
+
+<style>
+  .gap-2 {
+    gap: 0.5rem;
+  }
+</style>
+
 {% endblock %}
