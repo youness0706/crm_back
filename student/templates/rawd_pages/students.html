@@ -76,8 +76,8 @@
         <div class="card-body p-4 text-center">
           <!-- Student Photo -->
           <div class="mb-3">
-            {% if student.upload %}
-              <img src="{{ student.upload.url }}" alt="{{ student.fname }}" 
+            {% if student.image %}
+              <img src="{{ student.image.url }}" alt="{{ student.fname }}" 
                    class="rounded-circle border border-3 border-primary" 
                    style="width: 80px; height: 80px; object-fit: cover;">
             {% else %}
