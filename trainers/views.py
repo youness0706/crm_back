@@ -372,7 +372,7 @@ def added_payment(request):
 def payments_history(request):
     if request.user.is_authenticated:
         #Get first 50 payments
-        payments = Payments.objects.all().order_by('-id')[:30]
+        payments = Payments.objects.all().order_by('-id')
         context = {'payments':payments}
         return render(request,"pages/payments_history.html",context)
 
