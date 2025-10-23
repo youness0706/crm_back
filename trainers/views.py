@@ -371,11 +371,47 @@ def added_payment(request):
 @login_required(login_url='/login/')
 def payments_history(request):
     if request.user.is_authenticated:
-        #Get first 50 payments
-        payments = Payments.objects.all().order_by('-id')
-        context = {'payments':payments}
-        return render(request,"pages/payments_history.html",context)
+        from django.core.paginator import Paginator
 
+        # Get search query from GET parameters
+        search_query = request.GET.get('search', '').strip()
+        
+        # Start with all payments
+        payments = Payments.objects.select_related('trainer').all()
+        
+        # Apply search filter if query exists
+        if search_query:
+            from django.db.models.functions import Concat
+
+            payments = payments.annotate(
+                trainer_full_name=Concat(
+                    'trainer__first_name',
+                    Value(' '),
+                    'trainer__last_name'
+                )
+            ).filter(
+                Q(trainer__first_name__icontains=search_query) |
+                Q(trainer__last_name__icontains=search_query) |
+                Q(trainer_full_name__icontains=search_query) |
+                Q(paymentCategry__icontains=search_query)
+            )
+        
+        # Order by most recent
+        payments = payments.order_by('-id')
+        
+        # Paginate: 25 items per page (adjust as needed)
+        paginator = Paginator(payments, 25)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        
+        context = {
+            'payments': page_obj,
+            'search_query': search_query,
+            'paginator': paginator,
+            'page_obj': page_obj
+        }
+        return render(request, "pages/payments_history.html", context)
+    
 @login_required(login_url='/login/')
 def payments_del(request,id):
         Payments.objects.get(pk=id).delete()
@@ -667,7 +703,7 @@ def download_documents(request):
 
 
 
-from django.db.models import Q
+from django.db.models import Q,Value
 @login_required(login_url='/login/')
 def trainees(request,category):
     trainers = Trainer.objects.all()
