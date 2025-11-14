@@ -365,7 +365,7 @@ def remove_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     student.delete()
     messages.success(request, "تمت إزالة الطالب بنجاح")
-    return redirect('rawd_students')
+    return redirect('students')
 
 
 def search_students(request):
