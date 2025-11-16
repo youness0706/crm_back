@@ -76,20 +76,21 @@ def Home(request):
             unpaid_trainers = []
 
             for trainer in trainers:
-                # Get last payment for this category from prefetched data
+                # FIX: Get the payment object first, then extract the date
                 last_payment = Payments.objects.filter(
                     trainer=trainer,
                     paymentCategry=category
-                ).order_by('-paymentdate').values_list('paymentdate', flat=True).first()
+                ).order_by('-paymentdate').first()
 
                 if last_payment:
+                    last_payment_date = last_payment.paymentdate
                     payment_due_date = None
                     
                     if category_info['frequency'] == 'monthly':
-                        payment_due_date = last_payment + relativedelta(months=1)
+                        payment_due_date = last_payment_date + relativedelta(months=1)
                     elif category_info['frequency'] == 'yearly':
-                        payment_due_date = last_payment.replace(
-                            year=last_payment.year + 1
+                        payment_due_date = last_payment_date.replace(
+                            year=last_payment_date.year + 1
                         ) + timedelta(days=category_info['grace_days'])
 
                     # Check if payment is overdue
@@ -97,7 +98,7 @@ def Home(request):
                         unpaid_trainers.append({
                             'trainer_id': trainer.id,
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                            'last_payment_date': last_payment
+                            'last_payment_date': last_payment_date
                         })
                 else:
                     unpaid_trainers.append({
@@ -111,7 +112,6 @@ def Home(request):
                 'unpaid_trainers': unpaid_trainers,
                 'total_unpaid_trainers': len(unpaid_trainers)
             }
-
         # Paid today trainees
         paid_today_trainees = Payments.objects.filter(paymentdate=today).select_related('trainer')
         paid_today_trainees = [
