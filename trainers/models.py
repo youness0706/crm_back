@@ -89,6 +89,15 @@ class Trainer(models.Model):
             self.phone_parent = self.phone
         return self.phone_parent
     
+    class Meta:
+        indexes = [
+            models.Index(fields=['category']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['started_day']),
+            models.Index(fields=['first_name', 'last_name']),
+            models.Index(fields=['category', 'is_active']),  # Composite index
+        ]
+        ordering = ['-started_day']
    
 
 class Payments(models.Model):

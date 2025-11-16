@@ -65,6 +65,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'crm_back.urls'
 
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -81,8 +83,17 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'crm_back.wsgi.application'
 
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
