@@ -89,7 +89,7 @@ class Trainer(models.Model):
             self.phone_parent = self.phone
         return self.phone_parent
     
-    
+   
 
 class Payments(models.Model):
   CatChoices = (
@@ -105,6 +105,11 @@ class Payments(models.Model):
   @staticmethod
   def get_catchoices():
         return Payments.CatChoices
+  class Meta:
+        indexes = [
+            models.Index(fields=['trainer', 'paymentCategry', '-paymentdate']),
+            models.Index(fields=['paymentdate']),
+        ]
 
 class Article(models.Model):
     choices = (('local','محلي'),

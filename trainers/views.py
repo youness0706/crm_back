@@ -63,44 +63,45 @@ def Home(request):
         }
 
         payment_status = {}
+        
+        # Pre-fetch all last payments by category to avoid N+1 queries
+        from django.db.models import Window, F
+        from django.db.models.functions import RowNumber
+        
+        trainers = Trainer.objects.filter(is_active=True).prefetch_related(
+            'payments_set'
+        )
 
         for category, category_info in payment_categories.items():
-            trainers = Trainer.objects.filter(is_active=True)
             unpaid_trainers = []
 
             for trainer in trainers:
-                # Retrieve the last payment for the trainer in this category
+                # Get last payment for this category from prefetched data
                 last_payment = Payments.objects.filter(
                     trainer=trainer,
                     paymentCategry=category
-                ).order_by('-paymentdate').first()
+                ).order_by('-paymentdate').values_list('paymentdate', flat=True).first()
 
                 if last_payment:
-
                     payment_due_date = None
                     
                     if category_info['frequency'] == 'monthly':
-                        payment_due_date = last_payment.paymentdate + relativedelta(months=1)
-                        
-                    
+                        payment_due_date = last_payment + relativedelta(months=1)
                     elif category_info['frequency'] == 'yearly':
-                        payment_due_date = last_payment.paymentdate.replace(
-                            year=last_payment.paymentdate.year + 1
+                        payment_due_date = last_payment.replace(
+                            year=last_payment.year + 1
                         ) + timedelta(days=category_info['grace_days'])
 
                     # Check if payment is overdue
                     if today >= payment_due_date:
                         unpaid_trainers.append({
-                            'trainer_id': trainer.id,  # Added trainer ID
+                            'trainer_id': trainer.id,
                             'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                            'last_payment_date': last_payment.paymentdate
+                            'last_payment_date': last_payment
                         })
-                        
-                        
                 else:
-                    # Trainer has never paid in this category
                     unpaid_trainers.append({
-                        'trainer_id': trainer.id,  # Added trainer ID
+                        'trainer_id': trainer.id,
                         'trainer_name': f"{trainer.first_name} {trainer.last_name}",
                         'last_payment_date': None
                     })
@@ -110,6 +111,7 @@ def Home(request):
                 'unpaid_trainers': unpaid_trainers,
                 'total_unpaid_trainers': len(unpaid_trainers)
             }
+
         # Paid today trainees
         paid_today_trainees = Payments.objects.filter(paymentdate=today).select_related('trainer')
         paid_today_trainees = [
@@ -123,7 +125,7 @@ def Home(request):
         ]
 
         # Chart data
-        chart_labels = [str(m) for m in range(1, 13)]  # Months 1-12
+        chart_labels = [str(m) for m in range(1, 13)]
         chart_data = {category: [0] * 12 for category in payment_categories}
 
         for category in payment_categories:
@@ -138,19 +140,16 @@ def Home(request):
                 month = entry['paymentdate__month'] - 1
                 chart_data[category][month] = entry['total_income']
 
-        # Prepare context
         context = {
-            'financial_summary': financial_summary,  # Financial overview
-            'chart_labels': json.dumps(chart_labels),  # Chart labels
-            'chart_data': {key: json.dumps(value) for key, value in chart_data.items()},  # Chart data
-            'payment_status': payment_status,  # Payment tracking details
-            'paid_today_trainees': paid_today_trainees,  # Trainees who paid today
-            
+            'financial_summary': financial_summary,
+            'chart_labels': json.dumps(chart_labels),
+            'chart_data': {key: json.dumps(value) for key, value in chart_data.items()},
+            'payment_status': payment_status,
+            'paid_today_trainees': paid_today_trainees,
         }
 
         return render(request, "pages/index.html", context)
     return redirect('dashboard')
-
 
 @csrf_exempt
 @require_POST
