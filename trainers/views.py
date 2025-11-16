@@ -20,136 +20,155 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 
+@cache_page(60 * 5)
 @login_required(login_url='/login/')
 def Home(request):
-    if request.user.is_superuser:
-        now = timezone.now()
-        today = now.date()
-        # Financial summaries
-        financial_summary = {
-            'total_yearly_income': Payments.objects.filter(
-                paymentdate__year=today.year
-            ).aggregate(total=Sum('paymentAmount'))['total'] or 0,
-            'monthly_income': Payments.objects.filter(
-                paymentdate__year=today.year,
-                paymentdate__month=today.month
-            ).aggregate(total=Sum('paymentAmount'))['total'] or 0,
-            'today_income': Payments.objects.filter(
-                paymentdate=today
-            ).aggregate(total=Sum('paymentAmount'))['total'] or 0
-        }
+    if not request.user.is_superuser:
+        return redirect('dashboard')
+    
+    # Create unique cache key for this user
+    cache_key = f'dashboard_data_{request.user.id}'
+    
+    # Try to get cached data
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        return render(request, "pages/index.html", cached_data)
+    
+    # If not cached, compute everything
+    now = timezone.now()
+    today = now.date()
+    
+    # Financial summaries
+    financial_summary = {
+        'total_yearly_income': Payments.objects.filter(
+            paymentdate__year=today.year
+        ).aggregate(total=Sum('paymentAmount'))['total'] or 0,
+        'monthly_income': Payments.objects.filter(
+            paymentdate__year=today.year,
+            paymentdate__month=today.month
+        ).aggregate(total=Sum('paymentAmount'))['total'] or 0,
+        'today_income': Payments.objects.filter(
+            paymentdate=today
+        ).aggregate(total=Sum('paymentAmount'))['total'] or 0
+    }
 
-        payment_categories = {
-            'month': {
-                'label': 'شهرية', 
-                'frequency': 'monthly', 
-                'grace_days': 0
-            },
-            'subscription': {
-                'label': 'انخراط', 
-                'frequency': 'yearly', 
-                'grace_days': 0
-            },
-            'assurance': {
-                'label': 'التأمين', 
-                'frequency': 'yearly', 
-                'grace_days': 0
-            },'jawaz': {
-                'label': 'جواز', 
-                'frequency': 'yearly', 
-                'grace_days': 0
-            }
-        }
+    # Use raw SQL for better performance with large datasets
+    from django.db import connection
+    
+    payment_categories = {
+        'month': {'label': 'شهرية', 'frequency': 'monthly', 'grace_days': 0},
+        'subscription': {'label': 'انخراط', 'frequency': 'yearly', 'grace_days': 0},
+        'assurance': {'label': 'التأمين', 'frequency': 'yearly', 'grace_days': 0},
+        'jawaz': {'label': 'جواز', 'frequency': 'yearly', 'grace_days': 0}
+    }
 
-        payment_status = {}
-        
-        # Pre-fetch all last payments by category to avoid N+1 queries
-        from django.db.models import Window, F
-        from django.db.models.functions import RowNumber
-        
-        trainers = Trainer.objects.filter(is_active=True).prefetch_related(
-            'payments_set'
-        )
-
-        for category, category_info in payment_categories.items():
-            unpaid_trainers = []
-
-            for trainer in trainers:
-                # FIX: Get the payment object first, then extract the date
-                last_payment = Payments.objects.filter(
-                    trainer=trainer,
-                    paymentCategry=category
-                ).order_by('-paymentdate').first()
-
-                if last_payment:
-                    last_payment_date = last_payment.paymentdate
-                    payment_due_date = None
-                    
-                    if category_info['frequency'] == 'monthly':
-                        payment_due_date = last_payment_date + relativedelta(months=1)
-                    elif category_info['frequency'] == 'yearly':
-                        payment_due_date = last_payment_date.replace(
-                            year=last_payment_date.year + 1
-                        ) + timedelta(days=category_info['grace_days'])
-
-                    # Check if payment is overdue
-                    if today >= payment_due_date:
-                        unpaid_trainers.append({
-                            'trainer_id': trainer.id,
-                            'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                            'last_payment_date': last_payment_date
-                        })
-                else:
-                    unpaid_trainers.append({
-                        'trainer_id': trainer.id,
-                        'trainer_name': f"{trainer.first_name} {trainer.last_name}",
-                        'last_payment_date': None
-                    })
+    payment_status = {}
+    
+    for category, category_info in payment_categories.items():
+        # Use raw SQL for maximum performance
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    t.id,
+                    CONCAT(t.first_name, ' ', t.last_name) as trainer_name,
+                    MAX(p.paymentdate) as last_payment_date
+                FROM trainers_trainer t
+                LEFT JOIN trainers_payments p ON t.id = p.trainer_id AND p.paymentCategry = %s
+                WHERE t.is_active = TRUE
+                GROUP BY t.id, t.first_name, t.last_name
+            """, [category])
             
-            payment_status[category] = {
-                'label': category_info['label'],
-                'unpaid_trainers': unpaid_trainers,
-                'total_unpaid_trainers': len(unpaid_trainers)
-            }
-        # Paid today trainees
-        paid_today_trainees = Payments.objects.filter(paymentdate=today).select_related('trainer')
-        paid_today_trainees = [
-            {
-                "trainer_name": f"{payment.trainer.first_name} {payment.trainer.last_name}",
-                "payment_date": payment.paymentdate,
-                "payment_category": payment.get_paymentCategry_display(),
-                "payment_amount": payment.paymentAmount
-            }
-            for payment in paid_today_trainees
-        ]
-
-        # Chart data
-        chart_labels = [str(m) for m in range(1, 13)]
-        chart_data = {category: [0] * 12 for category in payment_categories}
-
-        for category in payment_categories:
-            category_income = Payments.objects.filter(
-                paymentCategry=category,
-                paymentdate__year=today.year
-            ).values('paymentdate__month').annotate(
-                total_income=Sum('paymentAmount')
-            )
-
-            for entry in category_income:
-                month = entry['paymentdate__month'] - 1
-                chart_data[category][month] = entry['total_income']
-
-        context = {
-            'financial_summary': financial_summary,
-            'chart_labels': json.dumps(chart_labels),
-            'chart_data': {key: json.dumps(value) for key, value in chart_data.items()},
-            'payment_status': payment_status,
-            'paid_today_trainees': paid_today_trainees,
+            rows = cursor.fetchall()
+            
+        unpaid_trainers = []
+        
+        for trainer_id, trainer_name, last_payment_date in rows:
+            if last_payment_date:
+                if category_info['frequency'] == 'monthly':
+                    payment_due_date = last_payment_date + relativedelta(months=1)
+                else:
+                    payment_due_date = last_payment_date.replace(
+                        year=last_payment_date.year + 1
+                    ) + timedelta(days=category_info['grace_days'])
+                
+                if today >= payment_due_date:
+                    unpaid_trainers.append({
+                        'trainer_id': trainer_id,
+                        'trainer_name': trainer_name,
+                        'last_payment_date': last_payment_date
+                    })
+            else:
+                unpaid_trainers.append({
+                    'trainer_id': trainer_id,
+                    'trainer_name': trainer_name,
+                    'last_payment_date': None
+                })
+        
+        payment_status[category] = {
+            'label': category_info['label'],
+            'unpaid_trainers': unpaid_trainers[:100],  # Limit to first 100
+            'total_unpaid_trainers': len(unpaid_trainers)
         }
 
-        return render(request, "pages/index.html", context)
-    return redirect('dashboard')
+    # Paid today - optimized
+    paid_today_trainees = list(Payments.objects.filter(
+        paymentdate=today
+    ).select_related('trainer').values(
+        'trainer__first_name',
+        'trainer__last_name',
+        'paymentdate',
+        'paymentCategry',
+        'paymentAmount'
+    )[:50])  # Limit to 50
+
+    paid_today_list = [
+        {
+            "trainer_name": f"{p['trainer__first_name']} {p['trainer__last_name']}",
+            "payment_date": p['paymentdate'],
+            "payment_category": dict(Payments._meta.get_field('paymentCategry').choices)[p['paymentCategry']],
+            "payment_amount": p['paymentAmount']
+        }
+        for p in paid_today_trainees
+    ]
+
+    # Chart data - use raw SQL for aggregation
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                paymentCategry,
+                EXTRACT(MONTH FROM paymentdate) as month,
+                SUM(paymentAmount) as total
+            FROM trainers_payments
+            WHERE EXTRACT(YEAR FROM paymentdate) = %s
+            GROUP BY paymentCategry, EXTRACT(MONTH FROM paymentdate)
+        """, [today.year])
+        
+        chart_results = cursor.fetchall()
+    
+    chart_labels = [str(m) for m in range(1, 13)]
+    chart_data = {category: [0] * 12 for category in payment_categories}
+    
+    for category, month, total in chart_results:
+        if category in chart_data:
+            chart_data[category][int(month) - 1] = float(total)
+
+    context = {
+        'financial_summary': financial_summary,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': {key: json.dumps(value) for key, value in chart_data.items()},
+        'payment_status': payment_status,
+        'paid_today_trainees': paid_today_list,
+    }
+    
+    # Cache for 5 minutes
+    cache.set(cache_key, context, 300)
+    
+    return render(request, "pages/index.html", context)
+
 
 @csrf_exempt
 @require_POST
