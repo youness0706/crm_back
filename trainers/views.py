@@ -759,26 +759,43 @@ def add_pay_from_prof(request,id,category,date):
 
 @login_required(login_url='/login/')
 def trainee_profile(request, id):
+    trainee = Trainer.objects.get(pk=id)
+    
     if request.method == 'POST':
+        # Handle payment addition
         if 'paymentCategry[]' in request.POST and request.POST['paymentdate']:
-            # Get all selected payment categories
             payment_categories = request.POST.getlist('paymentCategry[]')
             payment_date = request.POST['paymentdate']
             
-            # Create a payment record for each selected category
             for category in payment_categories:
-                add_pay_from_prof(request, id, category, payment_date)  
+                add_pay_from_prof(request, id, category, payment_date)
             
+            return redirect('profile', id=id)
+        
+        # Handle adding articles/events to trainee
+        if 'trainees' in request.POST:
+            article_ids = request.POST.getlist('trainees')
+            if article_ids:
+                articles = Article.objects.filter(id__in=article_ids)
+                for article in articles:
+                    article.trainees.add(trainee)
+            
+            return redirect('profile', id=id)
+    
     # Get all payments for the trainee
-    trainee_payments = Payments.objects.filter(trainer_id=id).order_by("paymentdate")  # Adjust as needed
-    articles = Article.objects.filter(trainees = Trainer.objects.get(pk=id))
+    trainee_payments = Payments.objects.filter(trainer_id=id).order_by("paymentdate")
+    
+    # Get articles the trainee is currently part of
+    articles = Article.objects.filter(trainees=trainee).order_by('-date')
+    
+    # Get all articles for the dropdown (all articles, not just available ones)
+    available_articles = Article.objects.exclude(trainees=trainee).order_by('-date')
 
     # Determine the range of months
     if trainee_payments.exists():
         first_payment_date = trainee_payments.first().paymentdate
         start_month = datetime(first_payment_date.year, first_payment_date.month, 1)
     else:
-        # Default to current month if no payments exist
         start_month = datetime(datetime.now().year, datetime.now().month, 1)
 
     # Generate months from the first payment to the current month
@@ -786,24 +803,40 @@ def trainee_profile(request, id):
     months = []
     while start_month <= current_month:
         months.append(start_month.strftime("%Y-%m"))
-        # Move to the next month
         if start_month.month == 12:
             start_month = datetime(start_month.year + 1, 1, 1)
         else:
             start_month = datetime(start_month.year, start_month.month + 1, 1)
-    jawaz = Payments.objects.filter(trainer_id=id,paymentCategry='jawaz')
-    assurance = Payments.objects.filter(trainer_id=id,paymentCategry='assurance')
-    subscription = Payments.objects.filter(trainer_id=id,paymentCategry='subscription')
-    # Track paid months
+    
+    jawaz = Payments.objects.filter(trainer_id=id, paymentCategry='jawaz')
+    assurance = Payments.objects.filter(trainer_id=id, paymentCategry='assurance')
+    subscription = Payments.objects.filter(trainer_id=id, paymentCategry='subscription')
+    
     paid_months = {payment.paymentdate.strftime("%Y-%m") for payment in trainee_payments.filter(paymentCategry='month')}
 
-    # Prepare context with payment status
     payment_status = [
         {"month": month, "status": "paid" if month in paid_months else "unpaid"}
         for month in months
     ]
 
-    return render(request, "pages/profile.html", {"payment_status": payment_status,"trainers":Trainer.objects.get(pk=id),'articles':articles,'jawaz':jawaz,'assurance':assurance,'subscription':subscription})
+    return render(request, "pages/profile.html", {
+        "payment_status": payment_status,
+        "trainers": trainee,
+        "articles": articles,
+        "all_articles": available_articles,
+        "jawaz": jawaz,
+        "assurance": assurance,
+        "subscription": subscription
+    })
+
+
+# Add this new view to handle removing a single article
+@login_required(login_url='/login/')
+def remove_article_from_trainee(request, trainee_id, article_id):
+    trainee = Trainer.objects.get(pk=trainee_id)
+    article = Article.objects.get(pk=article_id)
+    article.trainees.remove(trainee)
+    return redirect('profile', id=trainee_id)
 
 @login_required(login_url='/login/')
 def delete_trainer_view(request, id):

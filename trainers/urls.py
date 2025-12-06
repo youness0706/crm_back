@@ -6,6 +6,7 @@ urlpatterns = [
     #Trainees
     path('olders/<str:category>', views.trainees, name='trainees'),
     path('profile/<int:id>', views.trainee_profile, name='profile'),
+    path('remove_article/<int:trainee_id>/<int:article_id>/', views.remove_article_from_trainee, name='remove_article_from_trainee'),
     path('add_trainee', views.add_trainee, name='add_trainee'),
     path('addme', views.addme, name='addme'),
     path('addme', views.addme, name='addmegym'),
