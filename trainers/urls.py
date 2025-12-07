@@ -58,8 +58,10 @@ urlpatterns = [
     #Download reports,
     path('trainees_report/', views.download_documents, name='trainees_report'),
     path("export-xls/", views.export_xls, name="export_xls"),
-    # Add this new URL pattern for bulk deactivation
+    # Add URL patterns for bulk deactivate/activate
     path('bulk-deactivate-trainers/', views.bulk_deactivate_trainers, name='bulk_deactivate_trainers'),
+    path('bulk-activate-trainers/', views.bulk_activate_trainers, name='bulk_activate_trainers'),
+    path('non_active_trainees/', views.non_active_trainees, name='non_active_trainees'),
 
     
 ]

@@ -20,6 +20,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 
@@ -198,6 +199,40 @@ def bulk_deactivate_trainers(request):
             'deactivated_count': updated_count
         })
         
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+@require_POST
+def bulk_activate_trainers(request):
+    """
+    View to handle bulk activation of trainers
+    """
+    if not request.user.is_superuser:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+        trainer_ids = data.get('trainer_ids', [])
+
+        if not trainer_ids:
+            return JsonResponse({'success': False, 'error': 'No trainers selected'})
+
+        # Update trainers to active
+        updated_count = Trainer.objects.filter(
+            id__in=trainer_ids,
+            is_active=False
+        ).update(is_active=True)
+
+        return JsonResponse({
+            'success': True,
+            'message': f'تم تفعيل {updated_count} متدرب بنجاح',
+            'activated_count': updated_count
+        })
+
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
     except Exception as e:
@@ -719,7 +754,12 @@ def download_documents(request):
     return render(request, "pages/download_documents.html", context)
 
 
-
+@login_required(login_url='/login/')
+def non_active_trainees(request):
+    trainers = Trainer.objects.filter(is_active=False)
+    
+    template = loader.get_template('pages/non_active_trainees.html')
+    return render(request, 'pages/non_active_trainees.html', {'trainers':trainers,'number':trainers.count()})
 
 from django.db.models import Q,Value
 @login_required(login_url='/login/')
@@ -757,7 +797,6 @@ def add_pay_from_prof(request,id,category,date):
         Payments.objects.create(trainer = Trainer.objects.get(pk=id),paymentCategry=category,paymentAmount=amount,paymentdate=date).save()
     return redirect("profile",id)
 
-@login_required(login_url='/login/')
 def trainee_profile(request, id):
     trainee = Trainer.objects.get(pk=id)
     
