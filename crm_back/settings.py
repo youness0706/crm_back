@@ -19,7 +19,13 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
+except Exception:
+    # If python-dotenv is not installed or .env is missing, continue —
+    # environment variables may be set elsewhere (e.g., system env)
+    pass
 
 
 # Quick-start development settings - unsuitable for production
@@ -49,12 +55,14 @@ INSTALLED_APPS = [
     'student.apps.StudentConfig',
     'ckeditor',
     'django.contrib.humanize',
-    'storages',
+    "cloudinary",
+    "cloudinary_storage",
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -147,48 +155,30 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-STATIC_ROOT = 'static'
-STATIC_URL = 'static/'
-STATIC_DIRS= [
-    os.path.join(BASE_DIR,'trainers/static/')
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'trainers/static',
 ]
 
 #media
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-
-CKEDITOR_BASEPATH = "/static/ckeditor/"
-
-#Digital Ocean Spaces
-
+MEDIA_ROOT = None
 
 STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "secret_key":os.environ.get("SECRET_KEY"),
-            "access_key":os.environ.get("ACCESS_KEY"),
-            "bucket_name":"nojoum",
-            "endpoint_url":"https://nyc3.digitaloceanspaces.com",
-            "location":"media",
-            "default_acl":"public-read",
-            "custom_domain":"media.nojoumargana.site",
-             
-        },
-    },
-
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "secret_key":os.environ.get("SECRET_KEY"),
-            "access_key":os.environ.get("ACCESS_KEY"),
-            "bucket_name":"nojoum",
-            "endpoint_url":"https://nyc3.digitaloceanspaces.com",
-            "location":"static",
-            "default_acl":"public-read",
-             
-        },
-    },
+       "default": {
+           "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+       },
+       "staticfiles": {
+           "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+       },
+   }
+CKEDITOR_BASEPATH = "/static/ckeditor/"
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
 
 # Default primary key field type
