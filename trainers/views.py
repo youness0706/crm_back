@@ -1384,6 +1384,7 @@ def login_view(request):
                     else: return redirect('dashboard')  # Redirect to staff dashboard
                 except:
                     messages.error(request, 'غير مصرح بالدخول')
+                    logout(request)
                     return render(request, 'pages/login.html')
             else:
                 messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
